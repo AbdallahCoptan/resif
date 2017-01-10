@@ -1,4 +1,4 @@
-# Time-stamp: <Thu 2015-12-10 00:00 svarrette>
+# Time-stamp: <Tue 2017-01-10 23:37 svarrette>
 
 """Resif -- Revolutionary EasyBuild-based Software Installation Framework (RESIF).
 
@@ -78,17 +78,17 @@ setup(
     version=find_version('resif', '__init__.py'),
 
     # The project's main homepage.
-    url='http://github.com/ULHPC/resif',
+    url='http://gitlab.uni.lu/ULHPC/resif',
 
     description='Command line interface to deploy an EasyBuild-based software infrastructure and manage it.',
     long_description=LONG_DESCRIPTION,
     keywords='software build easybuild environment modules development',
 
     # Author details
-    author='ULHPC Sysadmins Team',
+    author='UL HPC Team',
     author_email='hpc-sysadmins@uni.lu',
 
-    license='GPLv2',
+    license='GPLv3',
 
     packages=['resif'],
 
