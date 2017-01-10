@@ -1,0 +1,12 @@
+site_name: RESIF Documentation
+repo_url: https://github.com/ULHPC/resif
+pages:
+- Home: 'index.md'
+- Documentation:
+  - 'Overview and Underlying tools': 'overview.md'
+  - 'Layout and Versioning': 'layout-and-versioning.md'
+  - 'Variables': 'variables.md'
+  - 'Command-line Interface': 'Command-line-interface.md'
+- Appendix:
+  - 'Lmod Installation': 'appendix/Lmod-install.md'
+  - 'ULHPC EasyBuild Repositories management': 'appendix/easybuild-repos-development.md'

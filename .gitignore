@@ -1,0 +1,5 @@
+dist/*
+resif.egg-info/*
+build/*
+*.swp
+site/
