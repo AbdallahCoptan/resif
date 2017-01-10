@@ -1,12 +1,8 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
-`overview.md`
 
-Copyright (c) 2014 [Sebastien Varrette](mailto:<Sebastien.Varrette@uni.lu>) [www]()
+        Time-stamp: <Tue 2017-01-10 22:31 svarrette>
 
-        Time-stamp: <Ven 2014-11-14 16:05 svarrette>
-
--------------------
-
+-------------------------------
 # Overview and Underlying Tools
 
 ## [Environment Modules](http://modules.sourceforge.net/)
@@ -18,7 +14,7 @@ Environment modules are a standard and well-established technology across HPC si
 The tool in itself is used to manage environment variables such as `PATH`, `LD_LIBRARY_PATH` and `MANPATH`, enabling the easy loading and unloading of application/library profiles and their dependencies.
 
     | Command                        | Description                                                   |
-    |--------------------------------+-------------------------------------------------------------- |
+    |--------------------------------|-------------------------------------------------------------- |
     | `module avail`                 | Lists all the modules which are available to be loaded        |
     | `module load <mod1> [mod2...]` | Load a module                                                 |
     | `module unload <module>`       | Unload a module                                               |
@@ -39,7 +35,7 @@ You can also see the following pages on the [UL HPC website](http://hpc.uni.lu/u
 At the heart of environment modules interaction resides the following components:
 
 * the `MODULEPATH` environment variable, which defined the list of searched directories for modulefiles
-* `modulefile` (see [an example](https://www.nersc.gov/assets/modulefile_example)) associated to each available software. 
+* `modulefile` (see [an example](https://www.nersc.gov/assets/modulefile_example)) associated to each available software.
 
 Example of layout:
 
@@ -55,7 +51,7 @@ Example of layout:
      $> cat 1.2.7
 	 #%Module1.0
      ##
-	 
+
      ## Required internal variables
 	 set		name		zlib
 	 set		version		1.2.7
@@ -100,17 +96,14 @@ On top of the above features, the objective is also to permit to HPC users and n
 In particular, instead of digging through some installation documentation, fighting with some `--prefix` issue to handle our classical rtfm suggestion (_i.e._ "we have no time now so install it in your homedir"), it might be as simple as:
 
 
-     # Search for an existing Easyconfigs file for 
+     # Search for an existing Easyconfigs file for
      $> eb --search mysoft
 	 [...]
 	 * $CFGS1/mysoft-3.5-goolf-1.4.10-dmpar.eb
 	 * $CFGS1/mysoft-3.5-ictce-4.1.13-dmpar.eb
 	 [...]
-	 
-     # install it 
+
+     # install it
 	 $> eb mysoft-3.5-goolf-1.4.10-dmpar.eb --robot
 
 Once the installation has succeeded, modules will be available for `mysoft` and all of its dependencies with the classical `module load mysoft`.
-
-
-
