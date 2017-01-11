@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 17:20 svarrette>
+        Time-stamp: <Wed 2017-01-11 18:21 svarrette>
 
 -------------------------------
 # RESIF Command Line Interface (CLI)
@@ -40,3 +40,6 @@ In practice, it performs the following actions:
 5. (ask to ) export a set of Environment variables:
      - `$EASYBUILD_PREFIX`
      - `$EASYBUILD_MODULES_TOOL` (to 'Lmod')
+
+
+## resif build

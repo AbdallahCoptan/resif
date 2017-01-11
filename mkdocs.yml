@@ -8,6 +8,7 @@ pages:
     - Lmod: 'tools/lmod.md'
     - Easybuild: 'tools/easybuild.md'
   - Installation: 'install.md'
+  - Module Naming Scheme: 'mns.md'
   - Easybuild Sources: 'ebsources.md'
   - Software Sets: 'software_sets.md'
 - Command-Line Interface (CLI):

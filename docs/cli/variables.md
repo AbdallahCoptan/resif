@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 10:21 svarrette>
+        Time-stamp: <Wed 2017-01-11 18:38 svarrette>
 
 --------------------------
 # RESIF Variables Overview
@@ -18,14 +18,15 @@ Here are all the __RESIF__ variables that can be set, followed by their descript
 | `datadir`      | Local Data directory                                                     | `$HOME/.local/resif/`     |
 | `mns`          | Module Naming Scheme (see below)                                         | `categorized_mns`         |
 | `release`      | Current release of the RESIF deployment (__differs__ from Resif version) | `v<major>.<minor>`        |
-| `releasedir`   | Subdirectory in which a release is to be deployed                        | `<release>-<date>`        |
+| `releasedir`   | Subdirectory in which a release is to be deployed                        | `branch/<release>-<date>` |
 | `installdir`   | Root Installation directory                                              | `<datadir>/<releasedir>/` |
 
 Note that for each of the above variables, the corresponding environmental variable `$RESIF_<uppercase(variable)>` can be set.
 
 In addition, as RESIF interacts with [Easybuild](https://hpcugent.github.io/easybuild), it sets several variables (prefixed with `eb_`) of interest for Easybuild that are listed below
 
-| RESIF Variable | Easybuild equivalent | Description                                 | Default (if any)         |
-|----------------|----------------------|---------------------------------------------|--------------------------|
-| `eb_prefix`    | `$EASYBUILD_PREFIX`  | Prefix directory for Easybuild installation | `$HOME/.local/easybuild` |
-|                |                      |                                             |                          |
+| RESIF Variable   | Easybuild equivalent      | Description                                 | Default (if any)         |
+|------------------|---------------------------|---------------------------------------------|--------------------------|
+| `eb_prefix`      | `$EASYBUILD_PREFIX`       | Prefix directory for Easybuild installation | `$HOME/.local/easybuild` |
+| `eb_module_tool` | `$EASYBUILD_MODULES_TOOL` | Module tool, in [ 'Lmod', 'Tcl']            |                          |
+|                  |                           |                                             |                          |
