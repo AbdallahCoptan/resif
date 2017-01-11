@@ -1,0 +1,37 @@
+# -*- mode: yaml -*-
+# Sample software set definition for RESIF
+
+################################
+# (optional) EB Custom Sources #
+################################
+#
+# Optional definition of custom sources for Easybuild recipes
+# i.e. easy{configs,blocks} if they differ from the default ones
+sources:
+  mysourcename:
+    priority: <n>   # knowing that default source get priority 50
+    easyconfigs:    # Specification for easybuild-easyconfigs
+      path: "/path/to/easybuild-easyconfigs" # local path
+      git:  "<giturl>"     # OR (better) git url for the repository
+      ref:  "<ref>"        # (optional) git object that should be checked out.
+      tag:  "<tag>"        # (optional) git tag that should be checked out
+      commit: "<commit>"   # (optional) a specific git commit
+      branch: "<branch>"   # (optional) a specific branch to pull
+    easyblocks:    # Specification for easybuild-easyblocks
+      path: "/path/to/easybuild-easyblocks" # local path
+      git:  "<giturl>"     # OR (better) git url for the repository
+      ref:  "<ref>"        # (optional) git object that should be checked out.
+      tag:  "<tag>"        # (optional) git tag that should be checked out
+      commit: "<commit>"   # (optional) a specific git commit
+      branch: "<branch>"   # (optional) a specific branch to pull
+
+###############################
+# Default Toolchains to Build #
+###############################
+# get the list of  supported compiler toolchains using:
+#      eb --list-toolchains
+# See also http://easybuild.readthedocs.io/en/latest/eb_list_toolchains.html
+toolchains:
+- foss
+- intel
+- gmvolf

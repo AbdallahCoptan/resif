@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 12:26 svarrette>
+        Time-stamp: <Wed 2017-01-11 15:46 svarrette>
 
 -----------------------------
 # Software Sets aka Resiffile
@@ -8,15 +8,7 @@
 Software sets are by default defined in `<configdir>/swsets/`.
 Each of them comes as a YAML file which holds the list of software / module expected to be installed, what version to install, and where to fetch them from.
 
-The format of is as follows:
-
-~~~yaml
-# Optional definition of custom sources for Easybuild recipes i.e. easy{configs,blocks}
-# if they differ from the default ones
-sources:
-~~~
-
-See also `sample/swsets.yaml`
+The format is depicted [__in `sample/swsets-format.yaml`__](sample/swsets-format.yaml).
 
 ## Global settings
 
@@ -76,10 +68,31 @@ sources:
 
 In particular, the above setting means that when a given `<software>.eb` recipe is to be built, RESIF will search for it in the following order:
 
-1. in the `<ulhpc_github>` source (priority:1) i.e. `<datadir>/`
-2. the default source (priority: 100)
-3. the `local` source (priority: 125)
+1. in the `<ulhpc_github>` source (priority:1)
+2. the default source (priority: 50)
+3. the `local` source (priority: 75)
 
+It means the following layout for RESIF `<datadir>` (_i.e._ `~/.local/resif` by default, see [variables.md](variables.md)):
+
+```bash
+<datadir>
+├── easyblocks
+│   ├── default/      # default easyblocks sources i.e. git from hpcugent/easybuild-easyblocks
+│   │   ├── CONTRIBUTING.md
+│   │   └── [...]
+│   ├── ulhpc_github/ # custom easyblocks sources  from ULHPC/easybuild-easyblocks fork
+│   │   ├── CONTRIBUTING.md
+│   │   └── [...]
+│   └── local -> /path/to/local/easyblocks  # Local symlink to the path
+└── easyconfigs     # default easyconfig sources i.e. git from hpcugent/easybuild-easyblocks
+    ├── default
+    │   ├── CONTRIBUTING.md
+    │   └── [...]
+    ├── ulhpc_github/
+    │   ├── CONTRIBUTING.md
+    │   └── [...]
+    └── local -> /path/to/local/easyconfigs
+```
 
 _Note_: you might want to define __permanently__ these custom sources in `<configdir>/swsets/<mysourceshortname>.yaml` to avoid having to repeat this information in your software sets
 
@@ -87,25 +100,57 @@ _Note_: you might want to define __permanently__ these custom sources in `<confi
 ### toolchains
 
 To build software with EasyBuild, the first thing you'll need to do is either pick a supported compiler toolchain, or construct your own and make EasyBuild support it.
-On your site, you typically wish to restrict to a few of the supported compiler toolchains (obtained by `eb --list-toolchains`)
+A _toolchain_ is a collection of tools to build (HPC) software consistently.
+It consists of:
 
-You can use the global `:toolchains` directive to list the ones you wish to consider when building your software set such that each software listed will
+* compilers for C/C++ and Fortran,
+* a communications library (MPI), and
+* mathematical libraries (linear algebra, FFT).
+
+On your site, you typically wish to restrict to a few of the [supported compiler toolchains](http://easybuild.readthedocs.io/en/latest/eb_list_toolchains.html) (obtained by `eb --list-toolchains`).
+
+You can use the global `toolchains:` directive to list the ones you wish to consider, typically as follows:
+
+```yaml
+###############################
+# Default Toolchains to Build #
+###############################
+# get the list of  supported compiler toolchains using:
+#      eb --list-toolchains
+# See also http://easybuild.readthedocs.io/en/latest/eb_list_toolchains.html
+toolchains:
+- foss
+- intel
+- gmvolf
+```
+
+Most interesting toolchains:
+
+| Toolchain | Description                     | Compilers      | MPI stack | Included Libraries                       |
+|-----------|---------------------------------|----------------|-----------|------------------------------------------|
+| `foss`    | Free & Open Source Software     | GCC            | OpenMPI   | OpenBLAS/LAPACK, ScaLAPACK(/BLACS), FFTW |
+| `intel`   | Intel-based software            | `icc`, `ifort` | `impi`    | `imkl`                                   |
+
+In addition, you might consider the following ones:
+
+| Toolchain | Description                     | Compilers      | MPI stack | Included Libraries                       |
+|-----------|---------------------------------|----------------|-----------|------------------------------------------|
+| `gmvolf`  | Open Source with MVAPICH2       | GCC            | MVAPICH2  | OpenBLAS/LAPACK, ScaLAPACK(/BLACS), FFTW |
+| `cgmvolf` | Clang Open Source with MVAPICH2 | Clang/GCC      | MVAPICH2  | OpenBLAS/LAPACK, ScaLAPACK(/BLACS), FFTW |
+| `cgoolf`  | Clang Open Source               | Clang/GCC      | OpenMPI   | OpenBLAS/LAPACK, ScaLAPACK(/BLACS), FFTW |
+
+When building your software sets, each software listed will be build for each listed toolchains __if possible__
 
 ### default software set
 
-Comes under `default:` according to the software set definition below
+Comes under `default:` according to the software set definition below.
 It holds the set of software to be present by default, which deserve a special attention (automatic software testing reported on Cdash, etc.)
 
 ## Software Set
 
 ```yaml
 <name>:
-  - <software1>.eb [: <sourcename>]
-  - <software2>.eb [: <sourcename>]
-  - ...
+- <software1>.eb [: <sourcename>]
+- <software2>.eb [: <sourcename>]
+- ...
 ```
-
-
-core: set of software present by default, which deserve a special attention (automatic software testing reported on Cdash, etc.)
-ulhpc: in addition to core, all built software availaible to the users of the UL HPC platform.
-In practice, each software set is assigned a dedicated section of the YAML configuration file software_sets.yaml precising the software it holds, for instance:
