@@ -6,6 +6,7 @@ pages:
   - Requirements:
     - Overview: 'tools/index.md'
     - Lmod: 'tools/lmod.md'
+    - Easybuild: 'tools/easybuild.md'
   - Installation: 'install.md'
   - Easybuild Sources: 'ebsources.md'
   - Software Sets: 'software_sets.md'

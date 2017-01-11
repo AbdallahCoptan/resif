@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 11:15 svarrette>
+        Time-stamp: <Wed 2017-01-11 17:20 svarrette>
 
 -------------------------------
 # RESIF Command Line Interface (CLI)
@@ -29,7 +29,7 @@ In practice, it performs the following actions:
     - prepare default software sets `<configdir>/swsets/default.yaml`
     - prepare the default roles (each of them specializing the [RESIF variables](variables.md))     `<configdir>/roles/{default,sysadmin}.yaml`
     - bootstrap the deployment version (used as `<release>`) if needed `<configdir>/VERSION`
-    - prepare the default EB source definition `<configdir>/sources/default.yaml`, which holds configuration for the Easybuild repository sources
+    - prepare the default EB source definition `<configdir>/sources/default.yaml`, which holds configuration for the Easybuild repository sources -- see [`ebsources.md`](../ebsources.md)
 2. initialize `<datadir>`   (`~/.local/resif`  by default)
     - setup the EB source repository (according to the definitions found in `<configdir>/sources/*.yaml`), _i.e._:
           * `<datadir>/easyconfigs/<sourcename>/`, a clone of the [easybuild-easyconfigs repository](https://github.com/hpcugent/easybuild-easyconfigs) which hosts EasyBuild specification files for the source `<sourcename>`
@@ -37,3 +37,6 @@ In practice, it performs the following actions:
 
 3. install [Easybuild](https://hpcugent.github.io/easybuild) according to the official [bootstrapping procedure](http://easybuild.readthedocs.io/en/latest/Installation.html#bootstrapping-easybuild) in `EASYBUILD_PREFIX=$HOME/.local/easybuild`
 4. creates `<installdir>`
+5. (ask to ) export a set of Environment variables:
+     - `$EASYBUILD_PREFIX`
+     - `$EASYBUILD_MODULES_TOOL` (to 'Lmod')
