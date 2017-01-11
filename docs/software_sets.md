@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 11:57 svarrette>
+        Time-stamp: <Wed 2017-01-11 12:26 svarrette>
 
 -----------------------------
 # Software Sets aka Resiffile
@@ -34,7 +34,55 @@ You might wish to configure for some of the software you wish to install your cu
 * your (private) fork of these repository holding your customized recipes
 * your local copy of these repository your working on when developing your own recipes
 
-Sources
+You are free to give to each of these [custom] sources a short name you can refer to later when listing the eb files to build.
+
+Expected format is as follows (see also `sample/swsets.yaml`)
+
+~~~yaml
+sources:
+  "mysourceshortname":
+    priority: <n>   # Default source get priority 100
+    easyconfigs:    # Specification for easybuild-easyconfigs
+      path: "/path/to/easybuild-easyconfigs" # local path
+      git:  "<giturl>"     # OR (better) git url for the repository
+      ref:  "<ref>"        # (optional) git object that should be checked out.
+      tag:  "<tag>"        # (optional) git tag that should be checked out
+      commit: "<commit>"   # (optional) a specific git commit
+      branch: "<branch>"   # (optional) a specific branch to pull
+    easyblocks:    # Specification for easybuild-easyblocks
+      path: "/path/to/easybuild-easyblocks" # local path
+      git:  "<giturl>"     # OR (better) git url for the repository
+      ref:  "<ref>"        # (optional) git object that should be checked out.
+      tag:  "<tag>"        # (optional) git tag that should be checked out
+      commit: "<commit>"   # (optional) a specific git commit
+      branch: "<branch>"   # (optional) a specific branch to pull
+~~~
+Example:
+
+~~~yaml
+sources:
+  "local":
+    priority: 125
+    easyconfigs:
+      path: "$HOME/devel/easybuild/easyconfigs"
+  "ulhpc_github":
+    priority: 1
+    easyconfigs:
+      git: "https://github.com/ULHPC/easybuild-easyconfigs"
+      branch: 'uni.lu'
+    easyblocks:
+      git: "https://github.com/ULHPC/easybuild-easyblocks"
+~~~
+
+In particular, the above setting means that when a given `<software>.eb` recipe is to be built, RESIF will search for it in the following order:
+
+1. in the `<ulhpc_github>` source (priority:1) i.e. `<datadir>/`
+2. the default source (priority: 100)
+3. the `local` source (priority: 125)
+
+
+_Note_: you might want to define __permanently__ these custom sources in `<configdir>/swsets/<mysourceshortname>.yaml` to avoid having to repeat this information in your software sets
+
 
 ### toolchains
 
