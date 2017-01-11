@@ -1,7 +1,3 @@
--*- mode: markdown; mode: visual-line; fill-column: 80 -*-
-
-        Time-stamp: <Wed 2017-01-11 18:21 svarrette>
-
 -------------------------------
 # RESIF Command Line Interface (CLI)
 
@@ -18,7 +14,7 @@
 | `info`                  | Display detailed information about a software set                    |
 | `version`               | Prints Resif's version information                                   |
 
-These commands relies on a set of [internal variables](variables.md) to perform each action.
+These commands relies on a set of [internal variables](../variables.md) to perform each action.
 
 ## resif init
 
@@ -27,7 +23,7 @@ In practice, it performs the following actions:
 
 1. initialize `<configdir>` (`~/.config/resif` by default)
     - prepare default software sets `<configdir>/swsets/default.yaml`
-    - prepare the default roles (each of them specializing the [RESIF variables](variables.md))     `<configdir>/roles/{default,sysadmin}.yaml`
+    - prepare the default roles (each of them specializing the [RESIF variables](../variables.md))     `<configdir>/roles/{default,sysadmin}.yaml`
     - bootstrap the deployment version (used as `<release>`) if needed `<configdir>/VERSION`
     - prepare the default EB source definition `<configdir>/sources/default.yaml`, which holds configuration for the Easybuild repository sources -- see [`ebsources.md`](../ebsources.md)
 2. initialize `<datadir>`   (`~/.local/resif`  by default)

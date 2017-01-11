@@ -8,12 +8,11 @@ pages:
     - Lmod: 'tools/lmod.md'
     - Easybuild: 'tools/easybuild.md'
   - Installation: 'install.md'
+  - Configuration Variables: 'variables.md'
   - Module Naming Scheme: 'mns.md'
   - Easybuild Sources: 'ebsources.md'
   - Software Sets: 'software_sets.md'
-- Command-Line Interface (CLI):
-  - Overview: 'cli/index.md'
-  - Variables: 'cli/variables.md'
+- Command-Line Interface (CLI): 'cli/index.md'
 - Documentation:
   - 'Overview and Underlying tools': 'tools/index.md'
   - 'Layout and Versioning': 'layout-and-versioning.md'
