@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 10:15 svarrette>
+        Time-stamp: <Wed 2017-01-11 10:25 svarrette>
 
 -------------------
 # Requirements
@@ -11,6 +11,7 @@ The only strict requirements are:
 * Python version 2.6, or a more recent 2.x version + `setuptools`, `vsc-install` & `vsc-base`
      - see also [Required Python packages of Easybuild](http://easybuild.readthedocs.io/en/latest/Installation.html#required-python-packages)
 * a working `git`
+* `pip` to install and uninstall the script (On Ubuntu, simply install the `python-pip` package.)
 * a __modules tool__: _i.e._ Tcl(/C) environment modules or (better) [Lmod](http://lmod.sourceforge.net).
   Currently supported module tools:
      - __(recommended)__ [Lmod](http://lmod.sourceforge.net/) (version >= 5.6.3)

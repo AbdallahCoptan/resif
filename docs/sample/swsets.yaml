@@ -1,0 +1,19 @@
+# -*- mode: yaml -*-
+# Sample software set definition for RESIF
+
+
+################################
+# (optional) EB Custom Sources #
+################################
+#
+# Optional definition of custom sources for Easybuild recipes
+# i.e. easy{configs,blocks} if they differ from the default ones
+sources:
+  mysourcename:
+    priority: 1     # Default source get priority 100
+    easyconfigs:    # Specification for easybuild-easyconfigs
+      git:  <giturl>
+      ref:  <ref>        # (optional) git object that should be checked out.
+      tag:  <tag>        # (optional) git tag that should be checked out
+      commit: <commit>   # (optional) a specific git commit
+      branch: <branch>   # (optional) a specific branch to pull

@@ -1,31 +1,9 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 09:25 svarrette>
+        Time-stamp: <Wed 2017-01-11 11:15 svarrette>
 
 -------------------------------
 # RESIF Command Line Interface (CLI)
-
-## Install Prerequisites
-
-To install this script, you need to have some required packages installed on your computer:
-
-- python 2.6 or above __TODO__ rework version
-- `git`
-- `pip` to install and uninstall the script (On Ubuntu, simply install the `python-pip` package.)
--  Environment module (or Lmod) set on your system.
-
-**Under Mac OS**: use [HomeBrew](http://brew.sh)
-
-~~~bash
-$> brew install lua
-$> luarocks-5.2 install luafilesystem   # Homebrew does not provide special Lua dependencies
-$> source ~/.zshrc        # Eventually
-$> brew install lmod
-~~~
-
-See the other pages of this documentation for [more details about these tools](https://gitlab.uni.lu/modules/infrastructure/wikis/overview)
-
-### Main commands Overview
 
 | Command                 | Description                                                          |
 |-------------------------|----------------------------------------------------------------------|
@@ -39,3 +17,23 @@ See the other pages of this documentation for [more details about these tools](h
 | `list`                  | List all available software sets                                     |
 | `info`                  | Display detailed information about a software set                    |
 | `version`               | Prints Resif's version information                                   |
+
+These commands relies on a set of [internal variables](variables.md) to perform each action.
+
+## resif init
+
+This command initialize / setup a working RESIF environment.
+In practice, it performs the following actions:
+
+1. initialize `<configdir>` (`~/.config/resif` by default)
+    - prepare default software sets `<configdir>/swsets/default.yaml`
+    - prepare the default roles (each of them specializing the [RESIF variables](variables.md))     `<configdir>/roles/{default,sysadmin}.yaml`
+    - bootstrap the deployment version (used as `<release>`) if needed `<configdir>/VERSION`
+    - prepare the default EB source definition `<configdir>/sources/default.yaml`, which holds configuration for the Easybuild repository sources
+2. initialize `<datadir>`   (`~/.local/resif`  by default)
+    - setup the EB source repository (according to the definitions found in `<configdir>/sources/*.yaml`), _i.e._:
+          * `<datadir>/easyconfigs/<sourcename>/`, a clone of the [easybuild-easyconfigs repository](https://github.com/hpcugent/easybuild-easyconfigs) which hosts EasyBuild specification files for the source `<sourcename>`
+          * `<datadir>/easyblocks/<sourcename>/`, a clone of the [easybuild-easyblocks repository](https://github.com/hpcugent/easybuild-easyblocks) which hosts implementations of install procedures
+
+3. install [Easybuild](https://hpcugent.github.io/easybuild) according to the official [bootstrapping procedure](http://easybuild.readthedocs.io/en/latest/Installation.html#bootstrapping-easybuild) in `EASYBUILD_PREFIX=$HOME/.local/easybuild`
+4. creates `<installdir>`

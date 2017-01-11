@@ -7,6 +7,8 @@ pages:
     - Overview: 'tools/index.md'
     - Lmod: 'tools/lmod.md'
   - Installation: 'install.md'
+  - Software Sets: 'software_sets.md'
+  - Easybuild Sources: 'ebsources.md'
 - Command-Line Interface (CLI):
   - Overview: 'cli/index.md'
   - Variables: 'cli/variables.md'
