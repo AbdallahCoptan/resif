@@ -3,7 +3,7 @@
 
 Copyright (c) 2014 [Sebastien Varrette](mailto:Sebastien.Varrette@uni.lu)
 
-        Time-stamp: <Tue 2017-01-10 22:30 svarrette>
+        Time-stamp: <Wed 2017-01-11 10:23 svarrette>
 
 -------------------
 
@@ -11,7 +11,7 @@ Copyright (c) 2014 [Sebastien Varrette](mailto:Sebastien.Varrette@uni.lu)
 
 ## Source Repository Layout
 
-The layout of the source repository reflects the topology detailed in the [Variables page](variables.md).
+The layout of the source repository reflects the topology detailed in the [Variables page](cli/variables.md).
 
      <srcpath>.
 	    ├── ...
@@ -21,7 +21,7 @@ The layout of the source repository reflects the topology detailed in the [Varia
 		├── easybuild/       # Git subtrees for EB (Obsolete)
 	    ├── ...
 
-__See also__ Top Source path `$srcpath` in [Variables](variables.md)
+__See also__ Top Source path `$srcpath` in [Variables](cli/variables.md)
 
 ## Releasing mechanism
 
@@ -66,7 +66,7 @@ In particular, any patch release `X.Y.Z` is applied into the existing `X.Y` envi
 
 ### Modules Directory layout vs. Releasing
 
-The below layout applies below `$appsroot` (see [Variable](variables.md)), _i.e._ `/opt/apps` in the below examples.
+The below layout applies below `$appsroot` (see [Variable](cli/variables.md)), _i.e._ `/opt/apps` in the below examples.
 
 
 
