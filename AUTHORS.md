@@ -8,7 +8,7 @@
 -----------------------------------------------------------------------------------
 ### RESIF v2.0 Framework
 
-The following authors contributed to the design and implementation of the core [RESIF](https://gitlab.uni.lu/ULHPC/resif) code:
+The main developers, responsible for the design and implementation of [RESIF](https://gitlab.uni.lu/ULHPC/resif), are listed below:
 
 | Name               | Institute                       | Email                                |
 |--------------------|---------------------------------|--------------------------------------|
@@ -16,4 +16,9 @@ The following authors contributed to the design and implementation of the core [
 | Sarah Diel         | University of Luxembourg        | <Sarah.Dielh@uni.lu>                 |
 | Valentin Plugaru   | University of Luxembourg        | <Valentin.Plugaru@uni.lu>            |
 | Hyacinthe Cartiaux | University of Luxembourg        | <Hyacinthe.Cartiaux@uni.lu>          |
-| Maxime Schmitt     | École Polytechnique de Montréal | <maxime.schmitt@telecom-bretagne.eu> |
+
+In addition, the following author contributed to RESIF in its first implementation:
+
+| Name           | Institute                       | Email                                |
+|----------------|---------------------------------|--------------------------------------|
+| Maxime Schmitt | École Polytechnique de Montréal | <maxime.schmitt@telecom-bretagne.eu> |

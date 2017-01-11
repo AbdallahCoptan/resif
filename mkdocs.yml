@@ -9,4 +9,5 @@ pages:
 - Documentation:
   - 'Overview and Underlying tools': 'tools/index.md'
   - 'Layout and Versioning': 'layout-and-versioning.md'
+- Authors/Contributors: 'AUTHORS.md'
 theme: readthedocs
