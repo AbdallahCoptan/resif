@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 16:31 svarrette>
+        Time-stamp: <Wed 2017-01-11 18:20 svarrette>
 
 -----------------------------
 # Software Sets aka Resiffile
@@ -14,57 +14,30 @@ The format is depicted [__in `sample/swsets-format.yaml`__](sample/swsets-format
 
 The following settings can be used to control how the Resiffile installs and handles software.
 
-### sources
+### sources (optional)
 
-See [`ebsources.md`](ebsources.md)
+See [`ebsources.md`](ebsources.md) -- you might want to precise here a custom source for [Easybuild](https://hpcugent.github.io/easybuild) recipes (_i.e._ easyconfigs and easyblocks) that you **haven't** configured in `<configdir>/sources/<shortname>.yaml` (for instance if you wnat to use this source only once for the considered software set).
+So you can do that under the
 
-Default [Easybuild](https://hpcugent.github.io/easybuild) recipes (_i.e._ easyconfigs and easyblocks) comes from the official EB Github repository, _i.e_:
-
-* [easybuild-easyconfigs](https://github.com/hpcugent/easybuild-easyconfigs)
-* [easybuild-easyblocks](https://github.com/hpcugent/easybuild-easyblocks)
-
-You might wish to configure for some of the software you wish to install your custom source for these repository
-Expected format is as follows (see also `sample/swsets.yaml`)
+You might wish to configure for some of the software you wish to install your custom source under `sources["mysourceshortname"]`, _i.e._ as follows (see also `sample/swsets.yaml`):
 
 ~~~yaml
 sources:
   "mysourceshortname":
     [...] use here the same format as for ebsources.md
 ~~~
+
 Example:
 
 ~~~yaml
 sources:
-  "local":
+  "local-devel":
     priority: 75
     easyconfigs:
       path: "$HOME/devel/easybuild/easyconfigs"
 ~~~
 
-It means the following layout for RESIF `<datadir>` (_i.e._ `~/.local/resif` by default, see [variables.md](variables.md)):
-
-```bash
-<datadir>
-├── easyblocks
-│   ├── default/      # default easyblocks sources i.e. git from hpcugent/easybuild-easyblocks
-│   │   ├── CONTRIBUTING.md
-│   │   └── [...]
-│   ├── ulhpc/ # custom easyblocks sources  from ULHPC/easybuild-easyblocks fork
-│   │   ├── CONTRIBUTING.md
-│   │   └── [...]
-│   └── local -> /path/to/local/easyblocks  # Local symlink to the path
-└── easyconfigs     # default easyconfig sources i.e. git from hpcugent/easybuild-easyblocks
-    ├── default
-    │   ├── CONTRIBUTING.md
-    │   └── [...]
-    ├── ulhpc_github/
-    │   ├── CONTRIBUTING.md
-    │   └── [...]
-    └── local -> /path/to/local/easyconfigs
-```
-
-_Note_: you might want to define __permanently__ these custom sources in `<configdir>/swsets/<mysourceshortname>.yaml` to avoid having to repeat this information in your software sets, as described [here](ebsources.md)
-
+_Note_: you might want to define __permanently__ these custom sources in `<configdir>/swsets/<mysourceshortname>.yaml` to avoid having to repeat this information in your software sets, as described [here](ebsources.md).
 
 ### toolchains
 
@@ -95,6 +68,8 @@ toolchains:
 - gmvolf
 ```
 
+__Note__: you precise the name of the compiler toolchains as the software listed under a given software set, _i.e._ under the form `<toolchain>/<version>` OR `<toochain>-<version>.eb`
+
 Most interesting toolchains:
 
 | Toolchain | Description                     | Compilers      | MPI stack | Included Libraries                       |
@@ -114,14 +89,35 @@ When building your software sets, each software listed will be build for each li
 
 ### default software set
 
-Comes under `default:` according to the software set definition below.
-It holds the set of software to be present by default, which deserve a special attention (automatic software testing reported on Cdash, etc.)
+Comes under `default:` as a list of software specifications according to the below format.
+It holds the set of software to be present by default (in addition ), which deserve a special attention (automatic software testing reported on Cdash, etc.)
+
+## Software Specifications
+
+You can refer to a given software to install (according to a Easybuild recipe) according to one for the following forms:
+
+~~~bash
+- <softname>-<version>-<toolchain>.eb  # Ex: HPL-2.1-foss-2016.06.eb, means install exactly that EB file
+- <softname>/<version>                 # Ex: HPL/2.1, means search for HPL-2.1*.eb and build the latest for the considered toolchains
+~~~
 
 ## Software Set
+
+A software set is simply a **list** of software specifications under a named namespace `<name>`, _i.e._ as follows:
 
 ```yaml
 <name>:
 - <software1>.eb [: <sourcename>]
 - <software2>.eb [: <sourcename>]
 - ...
+```
+
+Ex:
+
+```yaml
+default:   # Default software set
+- HPL/2.1
+- HPCG-2.1-goolf-1.4.10.eb
+lcsb:
+- STAR-2.5.1b-ictce-7.3.5.eb
 ```

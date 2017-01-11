@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 16:15 svarrette>
+        Time-stamp: <Wed 2017-01-11 17:53 svarrette>
 
 RESIF relies on [Easybuild](https://hpcugent.github.io/easybuild) recipes to install the softwares listed within [software sets](software_sets.md).
 Default [Easybuild](https://hpcugent.github.io/easybuild) recipes (_i.e._ easyconfigs and easyblocks) comes from the official EB Github repository, _i.e_:
@@ -12,6 +12,8 @@ You might wish to configure for some of the software you wish to install your cu
 
 * your (private) fork of these repository holding your customized recipes
 * your local copy of these repository your working on when developing your own recipes
+
+## YAML Format for EB sources
 
 You are free to give to each of these [custom] sources a short name `<shortname>` (except `default`) you can refer to later when listing the eb files to build.
 To do that, set a file `<configdir>/sources/<shortname>.yaml` according to the following format:
@@ -55,19 +57,19 @@ Where these files are defines as follows:
 
 priority: 50
 easyconfigs:
-  git: https://github.com/hpcugent/easybuild-easyconfigs
+  git: "https://github.com/hpcugent/easybuild-easyconfigs"
 easyblocks:
-  git: https://github.com/hpcugent/easybuild-easyblocks
+  git: "https://github.com/hpcugent/easybuild-easyblocks"
 ~~~
 
 ~~~yaml
 # sources/local.yaml
-# RESIF custom EB sources -- se your local working directories
+# RESIF custom EB sources -- set your local working directories
+# Note: use default easyblocks as not precised here
 
 priority: 75
 easyconfigs:
   path: "$HOME/devel/easybuild/easyconfigs"
-# Note: use default easyblocks from
 ~~~
 
 ~~~yaml
@@ -87,3 +89,29 @@ In particular, the above setting means that when a given `<software>.eb` recipe 
 1. in the `<ulhpc>` sources (priority:1)
 2. the default sources (priority: 50)
 3. the `local` sources (priority: 75)
+
+## Resulting Directory Layout
+
+The specification of EB sources impact all `resif` actions as the defined repositories need to be cloned/updated under the RESIF `<datadir>` (_i.e._ `~/.local/resif` by default, see [variables.md](variables.md)).
+To easily switch from one source to another, RESIF will setup the repository `easy{configs,blocks}` for the source `<name>` under `<datadir>/easy{configs,blocks}/<name>/`.
+In particular, with the above configuration (_i.e._ `<configdir>/sources/{default,local,ulhpc}.yaml`):
+
+```bash
+<datadir>
+├── easyblocks
+│   ├── default/      # default easyblocks sources i.e. git from hpcugent/easybuild-easyblocks
+│   │   ├── CONTRIBUTING.md
+│   │   └── [...]
+│   ├── ulhpc/ # custom easyblocks sources  from ULHPC/easybuild-easyblocks fork
+│   │   ├── CONTRIBUTING.md
+│   │   └── [...]
+│   └── local -> /path/to/local/easyblocks  # Local symlink to the path
+└── easyconfigs     # default easyconfig sources i.e. git from hpcugent/easybuild-easyblocks
+    ├── default/
+    │   ├── CONTRIBUTING.md
+    │   └── [...]
+    ├── ulhpc_github/
+    │   ├── CONTRIBUTING.md
+    │   └── [...]
+    └── local -> /path/to/local/easyconfigs
+```
