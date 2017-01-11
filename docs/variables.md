@@ -1,5 +1,5 @@
 
-        Time-stamp: <Wed 2017-01-11 21:57 svarrette>
+        Time-stamp: <Wed 2017-01-11 22:55 svarrette>
 
 --------------------------
 ## RESIF Variables Overview
@@ -47,8 +47,31 @@ The typical layout of this directory is depicted below:
 
 ```bash
 <configdir>
+  ├── roles/   # RESIF roles, to alter the default variables depending on the deployment context
+  │    ├── sysadmin.yaml  # HPC cluster sysadmin, expecting global deployment
+  │    └── default.yaml   # default role settings, i.e. local user
   ├── sources/   # Easybuild sources
   │    └── default.yaml   # default settings, based on reference 'hpcugent' Github repositories
   └── swsets/          # YAML definitions for the software sets
+       ├── ulhpc.yaml
+       └── default.yaml   # default software set
+```
 
+### Specific Data directory (`<datadir>`)
+
+The data directory for RESIF (__Default__: `$HOME/.local/resif/`), setup by `resif init` -- see [`cli/index.md`](cli/index.md)).
+It will typically hold the working copy(ies) of the Easybuild recipe repositories (_i.e._ [easyconfigs](https://github.com/hpcugent/easybuild-easyconfigs) and [easyblocks](https://github.com/hpcugent/easybuild-easyblocks) used to install the software sets.
+
+The typical layout of this directory is depicted below:
+
+```bash
+<datadir>
+├── easyblocks
+│   ├── default/      # default easyblocks sources i.e. git from hpcugent/easybuild-easyblocks
+│   ├── ulhpc/        # custom easyblocks sources  from ULHPC/easybuild-easyblocks fork
+│   └── local -> /path/to/local/easyblocks  # Local symlink to the path
+└── easyconfigs
+    ├── default/    # default easyconfig sources i.e. git from hpcugent/easybuild-easyconfigs
+    ├── ulhpc/      # custom easyconfigs sources  from ULHPC/easybuild-easyconfigs fork
+    └── local -> /path/to/local/easyconfigs
 ```
