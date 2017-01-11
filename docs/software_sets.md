@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 15:46 svarrette>
+        Time-stamp: <Wed 2017-01-11 16:14 svarrette>
 
 -----------------------------
 # Software Sets aka Resiffile
@@ -16,61 +16,30 @@ The following settings can be used to control how the Resiffile installs and han
 
 ### sources
 
+See [`ebsources.md`](ebsources.md)
+
 Default [Easybuild](https://hpcugent.github.io/easybuild) recipes (_i.e._ easyconfigs and easyblocks) comes from the official EB Github repository, _i.e_:
 
 * [easybuild-easyconfigs](https://github.com/hpcugent/easybuild-easyconfigs)
 * [easybuild-easyblocks](https://github.com/hpcugent/easybuild-easyblocks)
 
-You might wish to configure for some of the software you wish to install your custom source for these repository, _i.e._
-
-* your (private) fork of these repository holding your customized recipes
-* your local copy of these repository your working on when developing your own recipes
-
-You are free to give to each of these [custom] sources a short name you can refer to later when listing the eb files to build.
-
+You might wish to configure for some of the software you wish to install your custom source for these repository
 Expected format is as follows (see also `sample/swsets.yaml`)
 
 ~~~yaml
 sources:
   "mysourceshortname":
-    priority: <n>   # Default source get priority 100
-    easyconfigs:    # Specification for easybuild-easyconfigs
-      path: "/path/to/easybuild-easyconfigs" # local path
-      git:  "<giturl>"     # OR (better) git url for the repository
-      ref:  "<ref>"        # (optional) git object that should be checked out.
-      tag:  "<tag>"        # (optional) git tag that should be checked out
-      commit: "<commit>"   # (optional) a specific git commit
-      branch: "<branch>"   # (optional) a specific branch to pull
-    easyblocks:    # Specification for easybuild-easyblocks
-      path: "/path/to/easybuild-easyblocks" # local path
-      git:  "<giturl>"     # OR (better) git url for the repository
-      ref:  "<ref>"        # (optional) git object that should be checked out.
-      tag:  "<tag>"        # (optional) git tag that should be checked out
-      commit: "<commit>"   # (optional) a specific git commit
-      branch: "<branch>"   # (optional) a specific branch to pull
+    [...] use here the same format as for ebsources
 ~~~
 Example:
 
 ~~~yaml
 sources:
   "local":
-    priority: 125
+    priority: 75
     easyconfigs:
       path: "$HOME/devel/easybuild/easyconfigs"
-  "ulhpc_github":
-    priority: 1
-    easyconfigs:
-      git: "https://github.com/ULHPC/easybuild-easyconfigs"
-      branch: 'uni.lu'
-    easyblocks:
-      git: "https://github.com/ULHPC/easybuild-easyblocks"
 ~~~
-
-In particular, the above setting means that when a given `<software>.eb` recipe is to be built, RESIF will search for it in the following order:
-
-1. in the `<ulhpc_github>` source (priority:1)
-2. the default source (priority: 50)
-3. the `local` source (priority: 75)
 
 It means the following layout for RESIF `<datadir>` (_i.e._ `~/.local/resif` by default, see [variables.md](variables.md)):
 
@@ -80,7 +49,7 @@ It means the following layout for RESIF `<datadir>` (_i.e._ `~/.local/resif` by 
 │   ├── default/      # default easyblocks sources i.e. git from hpcugent/easybuild-easyblocks
 │   │   ├── CONTRIBUTING.md
 │   │   └── [...]
-│   ├── ulhpc_github/ # custom easyblocks sources  from ULHPC/easybuild-easyblocks fork
+│   ├── ulhpc/ # custom easyblocks sources  from ULHPC/easybuild-easyblocks fork
 │   │   ├── CONTRIBUTING.md
 │   │   └── [...]
 │   └── local -> /path/to/local/easyblocks  # Local symlink to the path
@@ -94,7 +63,7 @@ It means the following layout for RESIF `<datadir>` (_i.e._ `~/.local/resif` by 
     └── local -> /path/to/local/easyconfigs
 ```
 
-_Note_: you might want to define __permanently__ these custom sources in `<configdir>/swsets/<mysourceshortname>.yaml` to avoid having to repeat this information in your software sets
+_Note_: you might want to define __permanently__ these custom sources in `<configdir>/swsets/<mysourceshortname>.yaml` to avoid having to repeat this information in your software sets, as described [here](ebsources.md)
 
 
 ### toolchains
