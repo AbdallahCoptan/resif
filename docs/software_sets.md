@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 16:14 svarrette>
+        Time-stamp: <Wed 2017-01-11 16:31 svarrette>
 
 -----------------------------
 # Software Sets aka Resiffile
@@ -29,7 +29,7 @@ Expected format is as follows (see also `sample/swsets.yaml`)
 ~~~yaml
 sources:
   "mysourceshortname":
-    [...] use here the same format as for ebsources
+    [...] use here the same format as for ebsources.md
 ~~~
 Example:
 
@@ -88,8 +88,10 @@ You can use the global `toolchains:` directive to list the ones you wish to cons
 #      eb --list-toolchains
 # See also http://easybuild.readthedocs.io/en/latest/eb_list_toolchains.html
 toolchains:
-- foss
-- intel
+- foss/2016a
+- foss/2016b
+- intel/2016a
+- intel/2016b
 - gmvolf
 ```
 
