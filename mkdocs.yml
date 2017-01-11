@@ -3,9 +3,13 @@ repo_url: https://gitlab.uni.lu/ULHPC/resif
 pages:
 - Home: 'index.md'
 - Getting Started:
+  - Requirements:
+    - Overview: 'tools/index.md'
+    - Lmod: 'tools/lmod.md'
   - Installation: 'install.md'
 - Command-Line Interface (CLI):
   - Overview: 'cli/index.md'
+  - Variables: 'cli/variables.md'
 - Documentation:
   - 'Overview and Underlying tools': 'tools/index.md'
   - 'Layout and Versioning': 'layout-and-versioning.md'

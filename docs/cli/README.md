@@ -1,11 +1,11 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Tue 2017-01-10 22:54 svarrette>
+        Time-stamp: <Wed 2017-01-11 09:25 svarrette>
 
 -------------------------------
 # RESIF Command Line Interface (CLI)
 
-**Prerequisites:**
+## Install Prerequisites
 
 To install this script, you need to have some required packages installed on your computer:
 
@@ -14,7 +14,16 @@ To install this script, you need to have some required packages installed on you
 - `pip` to install and uninstall the script (On Ubuntu, simply install the `python-pip` package.)
 -  Environment module (or Lmod) set on your system.
 
-See the other pages of this documentation for [more details about these tools](https://gitlab.uni.lu/modules/infrastructure/wikis/overview) and the [installation instructions for Lmod](appendix/Lmod-install.md).
+**Under Mac OS**: use [HomeBrew](http://brew.sh)
+
+~~~bash
+$> brew install lua
+$> luarocks-5.2 install luafilesystem   # Homebrew does not provide special Lua dependencies
+$> source ~/.zshrc        # Eventually
+$> brew install lmod
+~~~
+
+See the other pages of this documentation for [more details about these tools](https://gitlab.uni.lu/modules/infrastructure/wikis/overview)
 
 ### Main commands Overview
 

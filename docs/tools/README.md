@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Tue 2017-01-10 22:31 svarrette>
+        Time-stamp: <Wed 2017-01-11 10:05 svarrette>
 
 -------------------------------
 # Overview and Underlying Tools
@@ -70,6 +70,8 @@ In particular, Lmod add many interesting features on top of the traditional impl
 * [User guide](https://www.tacc.utexas.edu/research-development/tacc-projects/lmod/user-guide)
 * [Advanced user guide](https://www.tacc.utexas.edu/research-development/tacc-projects/lmod/advanced-user-guide)
 * [Sysadmins Guide](https://www.tacc.utexas.edu/research-development/tacc-projects/lmod/system-administrators-guide)
+
+For more details / installation procedure per OS, see [lmod.md](lmod.md)
 
 
 ## [Easybuild](https://hpcugent.github.io/easybuild)

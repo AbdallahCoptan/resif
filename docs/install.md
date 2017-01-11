@@ -1,8 +1,30 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Tue 2017-01-10 23:01 svarrette>
+        Time-stamp: <Wed 2017-01-11 10:15 svarrette>
 
 -------------------
+# Requirements
+
+The only strict requirements are:
+
+* Linux or Mac OS X
+* Python version 2.6, or a more recent 2.x version + `setuptools`, `vsc-install` & `vsc-base`
+     - see also [Required Python packages of Easybuild](http://easybuild.readthedocs.io/en/latest/Installation.html#required-python-packages)
+* a working `git`
+* a __modules tool__: _i.e._ Tcl(/C) environment modules or (better) [Lmod](http://lmod.sourceforge.net).
+  Currently supported module tools:
+     - __(recommended)__ [Lmod](http://lmod.sourceforge.net/) (version >= 5.6.3)
+     - [Tcl/C environment-modules](http://modules.sourceforge.net/) (version >= 3.2.10)
+     - [Tcl-only variant of environment modules](http://sourceforge.net/p/modules/modules-tcl)
+
+**Under Mac OS**:
+
+the actual module command/script (modulecmd, modulecmd.tcl or lmod) must be available via $PATH
+see Required modules tool for more details
+For more information on (optional) dependencies, see Dependencies.
+
+
+
 ## Install from PyPi (recommended)
 
 #### With root permissions
