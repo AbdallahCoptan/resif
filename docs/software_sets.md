@@ -1,12 +1,12 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 18:20 svarrette>
+        Time-stamp: <Thu 2017-01-12 15:14 svarrette>
 
 -----------------------------
-# Software Sets aka Resiffile
+# Software Sets aka. RESIFile
 
-Software sets are by default defined in `<configdir>/swsets/`.
-Each of them comes as a YAML file which holds the list of software / module expected to be installed, what version to install, and where to fetch them from.
+Software sets are by default defined in `<configdir>/swsets/` but you can of course provide your own from any location and pass it as parameter to `resif`.
+Each RESIFile comes as a YAML file which holds the list of software / module expected to be installed, what version to install, and where to fetch them from.
 
 The format is depicted [__in `sample/swsets-format.yaml`__](sample/swsets-format.yaml).
 
@@ -112,6 +112,8 @@ A software set is simply a **list** of software specifications under a named nam
 - ...
 ```
 
+For instance, the below example defines **two** software sets (named `default` and `lcsb`).
+Recall that you **SHOULD** have a default software set
 Ex:
 
 ```yaml

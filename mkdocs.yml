@@ -11,11 +11,12 @@ pages:
   - Configuration Variables: 'variables.md'
   - Module Naming Scheme: 'mns.md'
   - Easybuild Sources: 'ebsources.md'
-  - Software Sets: 'software_sets.md'
+  - Software Sets / RESIFile: 'software_sets.md'
 - RESIF Workflow:
   - Versioning and Releasing Policy: 'versioning.md'
 - Command-Line Interface (CLI): 'cli/index.md'
 - Documentation:
+  - RESIFile: 'RESIFile.md'
   - 'Overview and Underlying tools': 'tools/index.md'
   - 'OLD Layout and Versioning': 'layout-and-versioning.md'
 - Authors/Contributors: 'AUTHORS.md'
