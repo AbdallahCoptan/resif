@@ -1,18 +1,20 @@
 -------------------------------
 # RESIF Command Line Interface (CLI)
 
-| Command                 | Description                                                          |
-|-------------------------|----------------------------------------------------------------------|
-| `init`                  | Initialize RESIF on your machine                                     |
-| `new`                   | Create a new recipe / software sets definition                       |
-| `build`                 | Build and deploy the configured software sets.                       |
-| `release`               | Release a new version of the defined software sets                   |
-| `export`                | Export the deployement configuration for further reproducible builds |
-| `import`                | Import a deployment configuration                                    |
-| `sources {add,list,rm}` | List/Add/Remove configured EB-[configs,blocks] sources               |
-| `list`                  | List all available software sets                                     |
-| `info`                  | Display detailed information about a software set                    |
-| `version`               | Prints Resif's version information                                   |
+| Command                    | Description                                                                         |
+|----------------------------|-------------------------------------------------------------------------------------|
+| `init`                     | Initialize RESIF on your machine                                                    |
+| `new`                      | Create a new recipe / software sets definition                                      |
+| `build`                    | Build and deploy the configured software sets.                                      |
+| `release`                  | Release a new version of the defined software sets                                  |
+| `export`                   | Export the deployement configuration for further reproducible builds                |
+| `import`                   | Import a deployment configuration                                                   |
+| `sources {add,list,rm}`    | List/Add/Remove configured EB-[configs,blocks] sources                              |
+| `list`                     | List all available software sets                                                    |
+| `info`                     | Display detailed information about a software set                                   |
+| `version`                  | Prints Resif's version information                                                  |
+| `bump:{major,minor,patch}` | Bump the _general_ release of the RESIF deployment (__differs__ from Resif version) |
+| `release`                  | Release a RESIF deployment                                                          |
 
 These commands relies on a set of [internal variables](../variables.md) to perform each action.
 
@@ -21,11 +23,13 @@ These commands relies on a set of [internal variables](../variables.md) to perfo
 This command initialize / setup a working RESIF environment.
 In practice, it performs the following actions:
 
-1. initialize `<configdir>` (`~/.config/resif` by default)
+1. initialize `<configdir>` (in `~/.config/resif` by default), typically as a clone of a `resif-control` repository.
+   Otherwise, it initialize `<configdir>` as follows:
     - prepare default software sets `<configdir>/swsets/default.yaml`
     - prepare the default roles (each of them specializing the [RESIF variables](../variables.md))     `<configdir>/roles/{default,sysadmin}.yaml`
     - bootstrap the deployment version (used as `<release>`) if needed `<configdir>/VERSION`
     - prepare the default EB source definition `<configdir>/sources/default.yaml`, which holds configuration for the Easybuild repository sources -- see [`ebsources.md`](../ebsources.md)
+    - __TO DISCUSSED__: `git flow init` in `<configdir>` ?
 2. initialize `<datadir>`   (`~/.local/resif`  by default)
     - setup the EB source repository (according to the definitions found in `<configdir>/sources/*.yaml`), _i.e._:
           * `<datadir>/easyconfigs/<sourcename>/`, a clone of the [easybuild-easyconfigs repository](https://github.com/hpcugent/easybuild-easyconfigs) which hosts EasyBuild specification files for the source `<sourcename>`

@@ -12,9 +12,11 @@ pages:
   - Module Naming Scheme: 'mns.md'
   - Easybuild Sources: 'ebsources.md'
   - Software Sets: 'software_sets.md'
+- RESIF Workflow:
+  - Versioning and Releasing Policy: 'versioning.md'
 - Command-Line Interface (CLI): 'cli/index.md'
 - Documentation:
   - 'Overview and Underlying tools': 'tools/index.md'
-  - 'Layout and Versioning': 'layout-and-versioning.md'
+  - 'OLD Layout and Versioning': 'layout-and-versioning.md'
 - Authors/Contributors: 'AUTHORS.md'
 theme: readthedocs
