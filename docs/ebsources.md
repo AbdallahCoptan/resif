@@ -1,6 +1,6 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 17:53 svarrette>
+        Time-stamp: <Fri 2017-01-13 08:55 svarrette>
 
 RESIF relies on [Easybuild](https://hpcugent.github.io/easybuild) recipes to install the softwares listed within [software sets](software_sets.md).
 Default [Easybuild](https://hpcugent.github.io/easybuild) recipes (_i.e._ easyconfigs and easyblocks) comes from the official EB Github repository, _i.e_:
@@ -115,3 +115,5 @@ In particular, with the above configuration (_i.e._ `<configdir>/sources/{defaul
     │   └── [...]
     └── local -> /path/to/local/easyconfigs
 ```
+
+Note that _a priori_, `<datadir>` also hosts the generated software and modules such that the complete layout of this directory includes additional directories as depicted in [`variables.md`](variables.md), section `<datadir>`

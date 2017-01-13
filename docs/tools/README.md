@@ -1,6 +1,5 @@
--*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
-        Time-stamp: <Wed 2017-01-11 10:05 svarrette>
+        Time-stamp: <Fri 2017-01-13 08:42 svarrette>
 
 -------------------------------
 # Overview and Underlying Tools
@@ -13,17 +12,17 @@ Environment modules are a standard and well-established technology across HPC si
 
 The tool in itself is used to manage environment variables such as `PATH`, `LD_LIBRARY_PATH` and `MANPATH`, enabling the easy loading and unloading of application/library profiles and their dependencies.
 
-    | Command                        | Description                                                   |
-    |--------------------------------|-------------------------------------------------------------- |
-    | `module avail`                 | Lists all the modules which are available to be loaded        |
-    | `module load <mod1> [mod2...]` | Load a module                                                 |
-    | `module unload <module>`       | Unload a module                                               |
-    | `module list`                  | List loaded modules                                           |
-    | `module display <module>`      | Display what a module does                                    |
-    | `module purge`                 | Unload all modules (purge)                                    |
-    | `module use <path>`            | Prepend the directory to the MODULEPATH environment variable  |
-    | `module unuse <path>`          | Remove the directory from the MODULEPATH environment variable |
-    |                                |                                                               |
+| Command                        | Description                                                   |
+|--------------------------------|---------------------------------------------------------------|
+| `module avail`                 | Lists all the modules which are available to be loaded        |
+| `module load <mod1> [mod2...]` | Load a module                                                 |
+| `module unload <module>`       | Unload a module                                               |
+| `module list`                  | List loaded modules                                           |
+| `module display <module>`      | Display what a module does                                    |
+| `module purge`                 | Unload all modules (purge)                                    |
+| `module use <path>`            | Prepend the directory to the MODULEPATH environment variable  |
+| `module unuse <path>`          | Remove the directory from the MODULEPATH environment variable |
+|                                |                                                               |
 
 *Note:* for more information, see the reference man pages for [modules](http://modules.sourceforge.net/man/module.html) and [modulefile](http://modules.sourceforge.net/man/modulefile.html), or the [official FAQ](http://sourceforge.net/p/modules/wiki/FAQ/).
 
@@ -71,7 +70,7 @@ In particular, Lmod add many interesting features on top of the traditional impl
 * [Advanced user guide](https://www.tacc.utexas.edu/research-development/tacc-projects/lmod/advanced-user-guide)
 * [Sysadmins Guide](https://www.tacc.utexas.edu/research-development/tacc-projects/lmod/system-administrators-guide)
 
-For more details / installation procedure per OS, see [lmod.md](lmod.md)
+For more details / installation procedure per OS, see [`lmod.md`](lmod.md)
 
 
 ## [Easybuild](https://hpcugent.github.io/easybuild)
@@ -94,18 +93,4 @@ It is motivated by the need for a tool that combines the following features:
 
 For all these reasons, Easybuild has been selected as the reference middleware to handle the building and the installation of the software provided via the modules environment.
 
-On top of the above features, the objective is also to permit to HPC users and newbies to easily build a non-provided software (instead of an admin ;)) on top of the provided software/toolchain stack.
-In particular, instead of digging through some installation documentation, fighting with some `--prefix` issue to handle our classical rtfm suggestion (_i.e._ "we have no time now so install it in your homedir"), it might be as simple as:
-
-
-     # Search for an existing Easyconfigs file for
-     $> eb --search mysoft
-	 [...]
-	 * $CFGS1/mysoft-3.5-goolf-1.4.10-dmpar.eb
-	 * $CFGS1/mysoft-3.5-ictce-4.1.13-dmpar.eb
-	 [...]
-
-     # install it
-	 $> eb mysoft-3.5-goolf-1.4.10-dmpar.eb --robot
-
-Once the installation has succeeded, modules will be available for `mysoft` and all of its dependencies with the classical `module load mysoft`.
+For more information, see [`easybuild.md`](easybuild.md).

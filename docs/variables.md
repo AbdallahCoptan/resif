@@ -1,5 +1,5 @@
 
-        Time-stamp: <Thu 2017-01-12 15:30 svarrette>
+        Time-stamp: <Fri 2017-01-13 08:39 svarrette>
 
 --------------------------
 ## RESIF Variables Overview
@@ -9,21 +9,22 @@ Although it is interesting to take a look at them to personalize an installation
 
 Here are all the __RESIF__ variables that can be set, followed by their descriptions.
 
-| RESIF Variable | Description                                                                                              | Default (if any)                  |
-|----------------|----------------------------------------------------------------------------------------------------------|-----------------------------------|
-| `user`         | User operating the process                                                                               | `<whoami>`                        |
-| `group`        | Group used for operating the process                                                                     |                                   |
-| `configdir`    | Configuration directory                                                                                  | `$HOME/.config/resif/`            |
-| `resifile`     | RESIF file to use, defining the software set__s__ to deploy                                              | `<configdir>/swsets/default.yaml` |
-| `datadir`      | Local Data directory                                                                                     | `$HOME/.local/resif/`             |
-| `mns`          | Module Naming Scheme (see [`mns.md`](mns.md))                                                            | `categorized_mns`                 |
-| `version`      | Current version to deploy, under the form `<major>.<minor>.<patch>` (see [`versioning.md`](versioning.md)) | content of `<configdir>/VERSION`  |
-| `swset`        | Current Software set to deploy (from `<resifile>`)                                                       | `default`                         |
-| `release`      | Current _general_ release of the RESIF deployment (__differs__ from Resif version)                       | `v<major>.<minor>`                |
-| `releasedir`   | Subdirectory in which a release is to be deployed                                                        | `[branch/]<release>-<date>`       |
-| `installdir`   | Root Installation directory (__differs__ from `eb_installpath`, see [`versioning.md`](versioning.md))    | `<datadir>/<releasedir>/<swset>`  |
-| `buildmode`    | Local build ('local') vs. via job submission  ('job')                                                    | local                             |
-| `eb_options`   | String of options to pass "as is" to EasyBuild.                                                          |                                   |
+| RESIF Variable | Description                                                                                                | Default (if any)                          |
+|----------------|------------------------------------------------------------------------------------------------------------|-------------------------------------------|
+| `user`         | User operating the process                                                                                 | `<whoami>`                                |
+| `group`        | Group used for operating the process                                                                       |                                           |
+| `configdir`    | Configuration directory                                                                                    | `$HOME/.config/resif/`                    |
+| `resifile`     | RESIF file to use, defining the software set__s__ to deploy                                                | `<configdir>/swsets/default.yaml`         |
+| `datadir`      | Local Data directory                                                                                       | `$HOME/.local/resif/`                     |
+| `mns`          | Module Naming Scheme (see [`mns.md`](mns.md))                                                              | `categorized_mns`                         |
+| `version`      | Current version to deploy, under the form `<major>.<minor>.<patch>` (see [`versioning.md`](versioning.md)) | content of `<configdir>/VERSION`          |
+| `swset`        | Current Software set to deploy (from `<resifile>`)                                                         | `default`                                 |
+| `release`      | Current _general_ release of the RESIF deployment (__differs__ from Resif version)                         | `v<major>.<minor>`                        |
+| `releasedir`   | Subdirectory in which a release is to be deployed                                                          | `[branch/]<release>-<date>` OR `<branch>` |
+| `installdir`   | Root Installation directory (__differs__ from `eb_installpath`, see [`versioning.md`](versioning.md))      | `<datadir>/<releasedir>/<swset>`          |
+| `buildmode`    | Local build ('local') vs. via job submission  ('job')                                                      | local                                     |
+| `eb_options`   | String of options to pass "as is" to EasyBuild.                                                            |                                           |
+
 
 
 Note that for each of the above variables, the corresponding environmental variable `$RESIF_<uppercase(variable)>` can be set.
@@ -109,6 +110,9 @@ The typical layout of this directory is depicted below:
 │   │   └── stata/          # specific software set (for using the Stata software suite)
 │   └── last -> v1.1-20150714    # Symlink to the latest build sets
 ├── stable -> production/last  # Symlink to the latest stable release
+├── v0.9 -> production/v0.9
+├── v1.0 -> production/v1.0
+├── v1.1 -> production/v1.1
 ├── easyblocks
 │   ├── default/      # default easyblocks sources i.e. git from hpcugent/easybuild-easyblocks
 │   ├── ulhpc/        # custom easyblocks sources  from ULHPC/easybuild-easyblocks fork
@@ -140,20 +144,13 @@ Thus, the `<release>` variable reflects this policy and only old the value `v<ma
 For all deploying situations, we wish to reflect the RESIF context of the build (at least with a timestamp information).
 So `<releasedir>` corresponds by default to `<release>-<timestamp>` (Ex: `v0.6-20170117`).
 
-In addition, assuming `<configdir>` is a git repository (thus a `resif-control` repository) **and** is configured according to a  [gitflow](http://nvie.com/posts/a-successful-git-branching-model/) layout, you might wish to reflect the current branch / git context you are operating on.
-This is of interest upon a minor or major release, _i.e._ when a `git flow release` operation is performed within the *production-ready* branch (as obtained from `git config --get gitflow.branch.master`, thus corresponding typically to the `production` branch).
+`/!\ IMPORTANT`: In addition, assuming `<configdir>` is a git repository (thus a `resif-control` repository) **and** is configured according to a  [gitflow](http://nvie.com/posts/a-successful-git-branching-model/) layout, you might wish to reflect the current branch / git context you are operating on.
+This is of interest upon a __minor or major__ release, _i.e._ when a `git flow release` operation is performed within the *production-ready* branch (as obtained from `git config --get gitflow.branch.master`, thus corresponding typically to the `production` branch).
 In this case, `<releasedir>` would be prefixed with the branch name of the resif-control repository and thus corresponds to `<branch>/<release>-<timestamp>`.
 Ex: `production/v0.6-20170117`.
+On the contrary, on the branch used for daily development (as obtained by ` git config --get gitflow.branch.develop`, thus corresponding typically to the `devel` or `master` branch), the timestamp or even the version has little interest, in which case it might be simpler to have `<releasedir>` corresponding to `<branch>`
 
-
-
-
-force the specification of a specific _release_ to consider corresponding to any valid git tag / commit / branch of the `$srcpath` repository with the following convention:
-
-* if `$release == HEAD`, then deploy under the sub-directory named with the current branch _i.e._ `<branch>/v<MAJOR>.<MINOR>`
-* if `$release` correspond to a tag, try to find it in the git branch (`production` most probably), then deploy under the sub-directory `tag/<tag>`
-* otherwise, `$release` shall corresponds to a commit sha1. Use it as reference and deploy it under the sub-directory `commit/<sha1>`
-
+This layout is reflected in the above example concerning `<datadir>`.
 
 
 
