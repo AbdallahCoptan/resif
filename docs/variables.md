@@ -1,5 +1,5 @@
 
-        Time-stamp: <Fri 2017-01-13 08:39 svarrette>
+        Time-stamp: <Fri 2017-01-13 09:00 svarrette>
 
 --------------------------
 ## RESIF Variables Overview
@@ -110,6 +110,7 @@ The typical layout of this directory is depicted below:
 │   │   └── stata/          # specific software set (for using the Stata software suite)
 │   └── last -> v1.1-20150714    # Symlink to the latest build sets
 ├── stable -> production/last  # Symlink to the latest stable release
+├── testing -> devel
 ├── v0.9 -> production/v0.9
 ├── v1.0 -> production/v1.0
 ├── v1.1 -> production/v1.1
