@@ -43,3 +43,22 @@ In practice, it performs the following actions:
 
 
 ## resif build
+
+This command build a software set according to:
+
+* either the path to a [`RESIFile`](../RESIFile.md) defining the software sets we wish to build and the configuration to use
+* or the name `<name>` of one of the pre-defined software sets under `<configdir>/swsets/<name>.yaml` -- see [`variables.md`](../variables.md)
+
+Then, this command performs the following tasks:
+
+1. (eventually) define new [EB sources](../ebsources.md) to be used to get the Easybuild Recipes
+2. pull all EB sources defined under `<datadir>/easy{blocks,configs}/*/` to get the up-to-date commits of these sources
+     - __TODO__: handle the case where specific commits are requested?
+3. (eventually) for each toolchain `<toolchain>` defined under `toolchains:`, build it under the 'default' software set _i.e._ `<installdir>/default/`
+4. for each software set `<swset>`:
+5. for each sofware `<software>`
+    * if defined as `<software>-<version>-<toolchain>.eb`: build it using `eb --robot [...]` under `<installdir>/<swset>/`
+    * else if defined as `<software>/<version>`:
+         - for each toolchain `<toolchain>`, find the appropriate [list of] `*.eb` source matching these constraints
+               * if found, install them
+               * else, find the [list of] `*.eb` files where the toolchain is as close as possible from the expected one and [try to] build them using `eb --robot --try-toolchain=<toolchain>,<toolchainversion> [...]`
