@@ -7,6 +7,7 @@ import click
 
 from resif.utilities import source
 from resif.utilities import role
+from resif.utilities import swset
 
 def initializeConfig(params):
     if params["git_resif_control"]:
@@ -24,6 +25,11 @@ def initializeConfig(params):
 
         source.createDefaultSource(params)
         role.createDefaultRole(params)
+        swset.createDefaultSwset(params)
+
+        version_file = open(os.path.join(params["configdir"], "VERSION"), 'w')
+        version_file.write("0.0.1")
+        version_file.close()
 
 def initializeDatadir(params):
     os.makedirs(params["datadir"])
