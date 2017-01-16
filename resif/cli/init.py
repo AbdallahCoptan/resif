@@ -33,6 +33,12 @@ def initializeConfig(params):
 
 def initializeDatadir(params):
     os.makedirs(params["datadir"])
+    os.mkdir(os.path.join(params["datadir"], "devel"))
+    os.mkdir(os.path.join(params["datadir"], "production"))
+    os.mkdir(os.path.join(params["datadir"], "easyblocks"))
+    os.mkdir(os.path.join(params["datadir"], "easyconfigs"))
+    os.symlink("devel", os.path.join(params["datadir"], "testing"))
+    os.symlink(os.path.join("production", "last"), os.path.join(params["datadir"], "stable"))
 
 def bootstrapEB(prefix, module_tool):
     return
