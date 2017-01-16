@@ -7,7 +7,7 @@ def createDefaultRole(params):
     data = {'user': getpass.getuser(),
             'resifile': str(os.path.join(params["configdir"], "swsets", "default.yaml")),
             'datadir': str(params["datadir"]),
-            'mns': 'categorized_mns',
+            'mns': params["mns"],
             'swset': 'default',
             'buildmode': 'local'
             }

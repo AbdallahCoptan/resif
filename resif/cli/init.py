@@ -46,7 +46,7 @@ def initializeDatadir(params):
     os.symlink(os.path.join("production", "last"), os.path.join(params["datadir"], "stable"))
     click.echo("DATADIR initialized successfully.")
 
-def bootstrapEB(prefix, module_tool):
+def bootstrapEB(prefix, mns, module_tool):
     click.echo("Bootstrapping EasyBuild. This might take a few minutes.")
     tmpdir = tempfile.mkdtemp()
     installscript = os.path.join(tmpdir, "bootstrap_eb.py")
@@ -57,9 +57,9 @@ def bootstrapEB(prefix, module_tool):
     errlog = open(os.path.join(tmpdir, "bootstrap_eb.err.log"), 'w')
 
     try:
-        subprocess.check_call("EASYBUILD_MODULES_TOOL=%s EASYBUILD_MODULE_NAMING_SCHEME=CategorizedModuleNamingScheme python %s %s" % (module_tool, installscript, prefix), shell=True, stdout=log, stderr=errlog)
+        subprocess.check_call("EASYBUILD_MODULES_TOOL=%s EASYBUILD_MODULE_NAMING_SCHEME=%s python %s %s" % (module_tool, mns, installscript, prefix), shell=True, stdout=log, stderr=errlog)
     except subprocess.CalledProcessError:
-        sys.stderr.write("EasyBuild installation failed. Logfiles can be found in %s." % (tmpdir))
+        sys.stderr.write("EasyBuild installation failed. Logfiles can be found in %s\n" % (tmpdir))
         exit(50)
 
     log.close()
@@ -76,6 +76,7 @@ def bootstrapEB(prefix, module_tool):
 @click.option('--datadir', 'datadir', envvar='RESIF_DATADIR', default='$HOME/.local/resif', help='Path to the root directory for apps (contains all the architecture correspondig to RESIF).')
 @click.option('--eb-prefix', 'eb_prefix', envvar='EASYBUILD_PREFIX', default='$HOME/.local/easybuild', help='Prefix directory for Easybuild installation.')
 @click.option('--eb-module-tool', 'eb_module_tool', envvar='EASYBUILD_MODULES_TOOL', type=click.Choice(['Lmod', 'EnvironmentModulesTcl', 'EnvironmentModulesC']), default='Lmod', help='Name of module tool.')
+@click.option('--mns', 'mns', envvar='EASYBUILD_MODULE_NAMING_SCHEME', type=click.Choice(['EasyBuildMNS', 'HierarchicalMNS', 'CategorizedModuleNamingScheme', 'CategorizedHMNS']), default='CategorizedModuleNamingScheme', help='Module Naming Scheme to be used.')
 @click.option('--overwrite', 'overwrite', flag_value=True, envvar='RESIF_OVERWRITE', help='Set this flag if you want to overwrite any existing directories in the CONFIGDIR and DATADIR.')
 def init(**kwargs):
     kwargs['configdir'] = os.path.abspath(os.path.expandvars(kwargs['configdir']))
@@ -99,5 +100,5 @@ def init(**kwargs):
 
     initializeConfig(kwargs)
     initializeDatadir(kwargs)
-    bootstrapEB(kwargs["eb_prefix"], kwargs["eb_module_tool"])
+    bootstrapEB(kwargs["eb_prefix"], kwargs["mns"], kwargs["eb_module_tool"])
 
