@@ -1,12 +1,11 @@
-import sys
-import click
 import os
-import subprocess
 import shutil
-import time
-import glob
+import subprocess
+import sys
 
-sys.path.append('.')
+import click
+
+from resif.utilities import sources
 
 def initializeConfig(params):
     if params["git_resif_control"]:
@@ -14,10 +13,14 @@ def initializeConfig(params):
         subprocess.check_call(['git', 'clone', params['git_resif_control'], params['configdir']])
     else:
         # manually create configdir layout
+        rolespath = os.path.join(params['configdir'], 'roles')
+        sourcespath = os.path.join(params['configdir'], 'sources')
+        swsetspath = os.path.join(params['configdir'], 'swsets')
         os.makedirs(params["configdir"])
-        os.mkdir(os.path.join(params['configdir'], 'roles'))
-        os.mkdir(os.path.join(params['configdir'], 'sources'))
-        os.mkdir(os.path.join(params['configdir'], 'swsets'))
+        os.mkdir(rolespath)
+        os.mkdir(sourcespath)
+        os.mkdir(swsetspath)
+        sources.createDefaultSource(sourcespath)
 
 def initializeDatadir(params):
     os.makedirs(params["datadir"])
