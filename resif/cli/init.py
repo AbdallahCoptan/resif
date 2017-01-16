@@ -7,6 +7,8 @@ import tempfile
 
 import click
 
+from git import Repo
+
 from resif.utilities import source
 from resif.utilities import role
 from resif.utilities import swset
@@ -15,7 +17,7 @@ def initializeConfig(params):
     click.echo("Creating RESIF configuration.")
     if params["git_resif_control"]:
         # clone git repo with configuration
-        subprocess.check_call(['git', 'clone', params['git_resif_control'], params['configdir']])
+        Repo.clone_from(params['git_resif_control'], params['configdir'])
     else:
         # manually create configdir layout
         rolespath = os.path.join(params['configdir'], 'roles')
@@ -44,6 +46,7 @@ def initializeDatadir(params):
     os.mkdir(os.path.join(params["datadir"], "easyconfigs"))
     os.symlink("devel", os.path.join(params["datadir"], "testing"))
     os.symlink(os.path.join("production", "last"), os.path.join(params["datadir"], "stable"))
+    source.pullall(params["configdir"], params["datadir"])
     click.echo("DATADIR initialized successfully.")
 
 def bootstrapEB(prefix, mns, module_tool):
