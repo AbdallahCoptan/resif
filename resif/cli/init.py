@@ -57,7 +57,7 @@ def bootstrapEB(prefix, module_tool):
     errlog = open(os.path.join(tmpdir, "bootstrap_eb.err.log"), 'w')
 
     try:
-        subprocess.check_call("python %s %s" % (installscript, prefix), shell=True, stdout=log, stderr=errlog)
+        subprocess.check_call("EASYBUILD_MODULES_TOOL=%s EASYBUILD_MODULE_NAMING_SCHEME=CategorizedModuleNamingScheme python %s %s" % (module_tool, installscript, prefix), shell=True, stdout=log, stderr=errlog)
     except subprocess.CalledProcessError:
         sys.stderr.write("EasyBuild installation failed. Logfiles can be found in %s." % (tmpdir))
         exit(50)
