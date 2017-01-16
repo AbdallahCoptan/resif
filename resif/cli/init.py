@@ -5,7 +5,8 @@ import sys
 
 import click
 
-from resif.utilities import sources
+from resif.utilities import source
+from resif.utilities import role
 
 def initializeConfig(params):
     if params["git_resif_control"]:
@@ -20,7 +21,9 @@ def initializeConfig(params):
         os.mkdir(rolespath)
         os.mkdir(sourcespath)
         os.mkdir(swsetspath)
-        sources.createDefaultSource(sourcespath)
+
+        source.createDefaultSource(params)
+        role.createDefaultRole(params)
 
 def initializeDatadir(params):
     os.makedirs(params["datadir"])
