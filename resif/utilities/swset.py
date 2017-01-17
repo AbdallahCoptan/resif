@@ -17,3 +17,27 @@ def createDefaultSwset(params):
     f.write(comment)
     yaml.dump(data, f, default_flow_style=False)
     f.close()
+
+def getSoftwareLists (resifile):
+    f = open(resifile, 'r')
+    data = yaml.load(f)
+    f.close()
+
+    swsets = {}
+
+    for swset in data.keys():
+        if swset not in ['toolchains', 'sources']:
+            swlist = []
+            for sw in data[swset]:
+                if sw.endswith(".eb"):
+                    swlist.append(sw)
+                else:
+                    name, version = sw.split('/')
+                    for toolchain in data['toolchains']:
+                        tcname, tcversion = toolchain.split("/")
+                        ebfile = "%s-%s-%s-%s.eb" % (name, version, tcname, tcversion)
+                        swlist.append(ebfile)
+            swsets[swset] = swlist
+
+    return swsets
+
