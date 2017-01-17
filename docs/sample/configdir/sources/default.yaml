@@ -1,0 +1,14 @@
+# -*- mode: yaml -*-
+# sources/default.yaml
+#######################################
+# Default EasyBuild Sources for RESIF #
+#######################################
+# For more information on the RESIF software, see
+# https://github.com/ULHPC/resif
+#
+# This file defines the default RESIF EB sources -- set by 'resif init'
+priority: 50
+easyconfigs:
+  git: "https://github.com/hpcugent/easybuild-easyconfigs"
+easyblocks:
+  git: "https://github.com/hpcugent/easybuild-easyblocks"
