@@ -69,7 +69,7 @@ def bootstrapEB(prefix, mns, module_tool):
     errlog.close()
 
     shutil.rmtree(tmpdir, True)
-    click.echo("Bootstrapping ended successfully.")
+    click.echo("Bootstrapping ended successfully. EasyBuild MODULEPATH is %s" % (os.path.join(prefix, "modules", "all")))
     return
 
 # Initialize the necessary directories
@@ -104,4 +104,5 @@ def init(**kwargs):
     initializeConfig(kwargs)
     initializeDatadir(kwargs)
     bootstrapEB(kwargs["eb_prefix"], kwargs["mns"], kwargs["eb_module_tool"])
+    click.echo("Finished initialization of RESIF. Please add the following lines to your .bashrc (or similar):\nexport RESIF_CONFIGDIR=%s\nexport EASYBUILD_PREFIX=%s\nexport EASYBUILD_MODULES_TOOL=%s\n" % (kwargs['configdir'], kwargs['eb_prefix'], kwargs['eb_module_tool']))
 
