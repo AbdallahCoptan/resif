@@ -31,7 +31,6 @@ def buildSwSets(params, roledata):
     else:
         options += ' --robot'
     options += ' --module-naming-scheme=' + roledata['mns']
-    options += ' --installpath=' + params['installdir']
 
     if cmd_exists("lmod"):
         params['module_cmd'] = "lmod"
@@ -44,24 +43,28 @@ def buildSwSets(params, roledata):
     for swset in swlists.keys():
         click.echo("Building %s..." % (swset))
 
+        installpath =  os.path.join(params['installdir'], swset)
+
         # We add the place where the software will be installed to the MODULEPATH for the duration of the installation
         # so that EasyBuild will not instantly forget that it has installed them after it is done (problematic for dependency resolution)
         # Part for environment-modules (come later for Lmod)
         # We also add the EB_PREFIX to ensure that EasyBuild will be available
 
-        corePath = os.path.join(params['eb_prefix'], 'modules', 'all')
+        ebInstallPath = os.path.join(params['eb_prefix'], 'modules', 'all')
+        defaultSwsetPath = os.path.join(params['installdir'], "default")
 
         if params["module_cmd"] == "modulecmd":
             try:
-                os.environ['MODULEPATH'] = ':'.join([os.environ['MODULEPATH'], os.path.join(params['installdir'], 'modules', 'all'), corePath])
+                os.environ['MODULEPATH'] = ':'.join([os.environ['MODULEPATH'], os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath])
             except KeyError:
-                os.environ['MODULEPATH'] = ':'.join([os.path.join(params['installdir'], 'modules', 'all'), corePath])
+                os.environ['MODULEPATH'] = ':'.join([os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath])
 
         process = subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         # Lmod part for MODULEPATH management
         if params["module_cmd"] == "lmod":
-            process.stdin.write("module use " + corePath + "\n")
+            process.stdin.write("module use " + ebInstallPath + "\n")
+            process.stdin.write("module use " + defaultSwsetPath + "\n")
             process.stdin.write("module use " + os.path.join(params['installdir'], 'modules', 'all') + "\n")
 
         if roledata['mns'] == "CategorizedModuleNamingScheme":
@@ -77,7 +80,7 @@ def buildSwSets(params, roledata):
         swsetStart = time.time()
         for software in swlists[swset]:
             click.echo("Now starting to install " + software[:-3])
-            process.stdin.write('eb ' + options + ' ' + software + '\n')
+            process.stdin.write('eb ' + options + ' --installpath=' + installpath + ' ' + software + '\n')
             # Command to have at the end of the output the execution code of the last command
             process.stdin.write('echo $?\n')
             out = ""
