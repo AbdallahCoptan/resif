@@ -36,6 +36,7 @@ def build(**kwargs):
         swsetfile = kwargs['swset'] + ".yaml"
         if os.path.isfile(os.path.join(kwargs['configdir'], "swsets", swsetfile)):
             click.echo("Loading software set '%s' from configdir %s" %(kwargs['swset'], kwargs['configdir']))
+            kwargs['swset'] = os.path.join(kwargs['configdir'], "swsets", swsetfile)
         else:
             sys.stderr.write("Software set %s cannot be found in configdir %s.\n" % (kwargs['swset'], kwargs['configdir']))
             exit(50)
