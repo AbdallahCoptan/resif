@@ -70,14 +70,14 @@ def buildSwSets(params, roledata):
             process.stdin.write('module load EasyBuild\n')
 
         if eblockspath:
-            process.stdin.write('export PYTHONPATH=$PYTHONPATH:' + eblockspath)
+            process.stdin.write('export PYTHONPATH=$PYTHONPATH:' + eblockspath + '\n')
 
         alreadyInstalled = False
 
         swsetStart = time.time()
         for software in swlists[swset]:
             click.echo("Now starting to install " + software[:-3])
-            process.stdin.write('eb ' + options + software)
+            process.stdin.write('eb ' + options + ' ' + software + '\n')
             # Command to have at the end of the output the execution code of the last command
             process.stdin.write('echo $?\n')
             out = ""
