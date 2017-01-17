@@ -63,6 +63,8 @@ def bootstrapEB(prefix, mns, module_tool):
         subprocess.check_call("EASYBUILD_MODULES_TOOL=%s EASYBUILD_MODULE_NAMING_SCHEME=%s python %s %s" % (module_tool, mns, installscript, prefix), shell=True, stdout=log, stderr=errlog)
     except subprocess.CalledProcessError:
         sys.stderr.write("EasyBuild installation failed. Logfiles can be found in %s\n" % (tmpdir))
+        log.close()
+        errlog.close()
         exit(50)
 
     log.close()
@@ -104,5 +106,5 @@ def init(**kwargs):
     initializeConfig(kwargs)
     initializeDatadir(kwargs)
     bootstrapEB(kwargs["eb_prefix"], kwargs["mns"], kwargs["eb_module_tool"])
-    click.echo("Finished initialization of RESIF. Please add the following lines to your .bashrc (or similar):\nexport RESIF_CONFIGDIR=%s\nexport EASYBUILD_PREFIX=%s\nexport EASYBUILD_MODULES_TOOL=%s\n" % (kwargs['configdir'], kwargs['eb_prefix'], kwargs['eb_module_tool']))
+    click.echo("Finished initialization of RESIF. Please add the following lines to your .bashrc (or similar):\n\nexport RESIF_CONFIGDIR=%s\nexport EASYBUILD_PREFIX=%s\nexport EASYBUILD_MODULES_TOOL=%s\n" % (kwargs['configdir'], kwargs['eb_prefix'], kwargs['eb_module_tool']))
 
