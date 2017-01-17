@@ -17,3 +17,12 @@ def createDefaultRole(params):
     f.write(comment)
     yaml.dump(data, f, default_flow_style=False)
     f.close()
+
+def get(name, configdir):
+    filename = os.path.join(configdir, "roles", name + ".yaml")
+
+    f = open(filename, 'r')
+    data = yaml.load(f)
+    f.close()
+
+    return data
