@@ -1,6 +1,6 @@
 import os
 import yaml
-import sys
+
 from git import Repo
 
 def createDefaultSource(params):

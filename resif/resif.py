@@ -10,6 +10,7 @@ import subprocess
 import pkg_resources
 
 from .cli.init import init
+from .cli.build import build
 
 
 #######################################################################################################################
@@ -32,3 +33,4 @@ def resif(ctx, version):
 #######################################################################################################################
 
 resif.add_command(init)
+resif.add_command(build)
