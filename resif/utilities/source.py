@@ -81,7 +81,7 @@ def pullall(configdir, datadir, resifile=None):
                     eblockspathslist.append((source['priority'], eblockspath))
                 if "easyconfigs" in source:
                     __pull(source["easyconfigs"], econfigspath)
-                    econfigspathslist.append((source['priority'], econfigspath))
+                    econfigspathslist.append((source['priority'], os.path.join(econfigspath, "easybuild", "easyconfigs")))
 
     eblockspathslist.sort(key=lambda x: x[0])
     econfigspathslist.sort(key=lambda x: x[0])
