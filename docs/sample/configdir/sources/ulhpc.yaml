@@ -1,0 +1,17 @@
+# -*- mode: yaml -*-
+# sources/ulhpc.yaml
+######################################
+# Custom Easybuild Sources for RESIF #
+######################################
+# For more information on the RESIF software, see
+# https://github.com/ULHPC/resif
+#
+# This file defines the custom RESIF EB sources, pointing of the ULHPC forks of
+# the official hpcugent repositories of EB recipes easy{configs,blocks}
+priority: 10
+easyconfigs:
+  git: "https://github.com/ULHPC/easybuild-easyconfigs"
+  branch: 'uni.lu-develop'
+easyblocks:
+  git: "https://github.com/hpcugent/easybuild-easyblocks"
+  branch: 'develop'

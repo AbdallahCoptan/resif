@@ -1,0 +1,38 @@
+# -*- mode: yaml -*-
+# swsets/default.yaml
+##################################
+# Default Software set for RESIF #
+##################################
+# For more information on the RESIF software, see
+# https://github.com/ULHPC/resif
+
+###############################
+# Default Toolchains to Build #
+###############################
+# get the list of  supported compiler toolchains using:
+#      eb --list-toolchains
+# See also http://easybuild.readthedocs.io/en/latest/eb_list_toolchains.html
+# Here we focus on the [latest] recommended ones
+toolchains:
+- foss/2016b
+- intel/2016b
+
+########################
+# Default Software Set #
+########################
+# Here we define **only one** software set named 'default'
+#
+default:
+# Debuggers
+- GDB-7.11-foss-2016a-Python-2.7.11.eb
+- GDB-7.11-intel-2016a-Python-2.7.11.eb
+- Valgrind-3.11.0-foss-2016a.eb
+# C/C++
+- Boost/1.61.0
+- CMake/3.7.1
+- Eigen-3.2.9-intel-2016b.eb
+- GMP/6.1.1
+# Maths / Statistics
+- R/3.3.1
+# Data Tools
+- HDF5/1.8.18
