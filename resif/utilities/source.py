@@ -42,7 +42,7 @@ def __pull(repoinfo, path):
 
 
 
-def pullall(configdir, datadir, additional_sources=None):
+def pullall(configdir, datadir, resifile=None):
 
     eblockspathslist = []
     econfigspathslist = []
@@ -65,18 +65,23 @@ def pullall(configdir, datadir, additional_sources=None):
             __pull(source["easyconfigs"], econfigspath)
             econfigspathslist.append((source['priority'], econfigspath))
 
-    if additional_sources:
-        for name in additional_sources.keys():
-            eblockspath = os.path.join(datadir, "easyblocks", name)
-            econfigspath = os.path.join(datadir, "easyconfigs", name)
-            source = additional_sources[name]
+    if resifile:
+        f = open(resifile, 'r')
+        data = yaml.load(f)
+        f.close()
 
-            if "easyblocks" in source:
-                __pull(source["easyblocks"], eblockspath)
-                eblockspathslist.append((source['priority'], eblockspath))
-            if "easyconfigs" in source:
-                __pull(source["easyconfigs"], econfigspath)
-                econfigspathslist.append((source['priority'], econfigspath))
+        if 'sources' in data:
+            for name in data['sources'].keys():
+                eblockspath = os.path.join(datadir, "easyblocks", name)
+                econfigspath = os.path.join(datadir, "easyconfigs", name)
+                source = data['sources'][name]
+
+                if "easyblocks" in source:
+                    __pull(source["easyblocks"], eblockspath)
+                    eblockspathslist.append((source['priority'], eblockspath))
+                if "easyconfigs" in source:
+                    __pull(source["easyconfigs"], econfigspath)
+                    econfigspathslist.append((source['priority'], econfigspath))
 
     eblockspathslist.sort(key=lambda x: x[0])
     econfigspathslist.sort(key=lambda x: x[0])
