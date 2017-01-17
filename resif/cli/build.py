@@ -85,21 +85,21 @@ def buildSwSets(params, roledata):
                 out = process.stdout.readline()
                 if re.search("\(module found\)", out) != None:
                     alreadyInstalled = True
-                    try:
-                        i = int(out)
-                    except ValueError:
-                        i = -1
-                    if i < 0:
-                        click.echo(out)
-                    else:
-                        if i == 0:
-                            if alreadyInstalled:
-                                click.echo(software[:-3] + " was already installed. Nothing to be done.\n")
-                                alreadyInstalled = False
-                            else:
-                                click.echo('Successfully installed ' + software[:-3] + '.\n')
+                try:
+                    i = int(out)
+                except ValueError:
+                    i = -1
+                if i < 0:
+                    click.echo(out)
+                else:
+                    if i == 0:
+                        if alreadyInstalled:
+                            click.echo(software[:-3] + " was already installed. Nothing to be done.\n")
+                            alreadyInstalled = False
                         else:
-                            click.echo('Failed to install ' + software[:-3] + '\n' + 'Operation failed with return code ' + out, err=True)
+                            click.echo('Successfully installed ' + software[:-3] + '.\n')
+                    else:
+                        click.echo('Failed to install ' + software[:-3] + '\n' + 'Operation failed with return code ' + out, err=True)
                         exit(out)
                     break
 
@@ -120,7 +120,6 @@ def buildSwSets(params, roledata):
 @click.option('--configdir', 'configdir', envvar='RESIF_CONFIGDIR', default='$HOME/.config/resif', help='Defines an alternative path to load the configuration from.')
 # Software building variables
 @click.option('--installdir', 'installdir', envvar='RESIF_INSTALLDIR', help="Use if you don't want to deploy the software inside the <datadir>. Softwares will then be deployed in <installdir>/<swset>/modules")
-@click.option('--buildmode', envvar='RESIF_BUILDMODE', type=click.Choice(['local', 'job']), default='local', help='Mode to build the software: either building locally or in a job.')
 @click.option('--role', envvar='RESIF_ROLE', default='default', help='Role configuration to use.')
 @click.option('--eb-prefix', 'eb_prefix', envvar='EASYBUILD_PREFIX', default='$HOME/.local/easybuild', help='Prefix directory for Easybuild installation.')
 @click.option('--eb-buildpath', 'eb_buildpath', envvar='EASYBUILD_BUILDPATH', help='EasyBuild buildpath.')
@@ -158,9 +157,8 @@ def build(**kwargs):
                 click.echo("Software set %s cannot be found in configdir %s." % (kwargs['swset'], kwargs['configdir']), err=True)
                 exit(50)
     else:
+        click.echo("Using default software set defined in role '%s': %s" % (kwargs['role'], roledata['resifile']))
         kwargs['swset'] = roledata['resifile']
-
-    print kwargs
 
     click.echo("Building the software sets.")
     start = time.time()
