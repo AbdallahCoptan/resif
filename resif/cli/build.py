@@ -41,7 +41,7 @@ def buildSwSets(params, roledata):
         exit(40)
 
     for swset in swlists.keys():
-        click.echo("Building %s..." % (swset))
+        click.echo("Building '%s'..." % (swset))
 
         installpath =  os.path.join(params['installdir'], swset)
 
@@ -106,14 +106,14 @@ def buildSwSets(params, roledata):
                 except ValueError:
                     i = -1
                 if i < 0:
-                    click.echo(out)
+                    click.echo(out, nl=False)
                 else:
                     if i == 0:
                         if alreadyInstalled:
                             click.echo(software[:-3] + " was already installed. Nothing to be done.\n")
                             alreadyInstalled = False
                         else:
-                            click.echo('Successfully installed ' + software[:-3] + '.\n')
+                            click.echo('Successfully installed ' + software[:-3])
                     else:
                         click.echo('Failed to install ' + software[:-3] + '\n' + 'Operation failed with return code ' + out, err=True)
                         exit(out)
@@ -125,8 +125,8 @@ def buildSwSets(params, roledata):
         swsetDuration = swsetEnd - swsetStart
         m, s = divmod(swsetDuration, 60)
         h, m = divmod(m, 60)
-        swsetDurationStr = "%d:%d:%d" % (h, m, s)
-        sys.stdout.write("Software set " + swset + " Successfully installed. Build duration: " + swsetDurationStr + ".\n")
+        swsetDurationStr = "%dh %dm %ds" % (h, m, s)
+        click.echo("Software set '" + swset + "' successfully installed. Build duration: " + swsetDurationStr)
 
     return
 
@@ -176,7 +176,7 @@ def build(**kwargs):
         click.echo("Using default software set defined in role '%s': %s" % (kwargs['role'], roledata['resifile']))
         kwargs['swset'] = roledata['resifile']
 
-    click.echo("Building the software sets.")
+    click.echo("Building the software sets...")
     start = time.time()
 
     buildSwSets(kwargs, roledata)
@@ -185,7 +185,7 @@ def build(**kwargs):
     duration = end - start
     m, s = divmod(duration, 60)
     h, m = divmod(m, 60)
-    durationFormated = "%dh%dm%ds" % (h, m, s)
-    click.echo("Software sets successfully built. The build duration was of " + durationFormated)
+    durationFormated = "%dh %dm %ds" % (h, m, s)
+    click.echo("All software sets successfully installed. Build duration: " + durationFormated)
 
     return
