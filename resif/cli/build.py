@@ -53,10 +53,14 @@ def buildSwSets(params, roledata):
         ebInstallPath = os.path.join(params['eb_prefix'], 'modules', 'all')
         defaultSwsetPath = os.path.join(params['installdir'], "default")
 
+        oldmodulepath = ""
+        if 'MODULEPATH' in os.environ and os.environ['MODULEPATH']:
+            oldmodulepath = os.environ['MODULEPATH']
+
         if params["module_cmd"] == "modulecmd":
-            try:
-                os.environ['MODULEPATH'] = ':'.join([os.environ['MODULEPATH'], os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath])
-            except KeyError:
+            if oldmodulepath:
+                os.environ['MODULEPATH'] = ':'.join([oldmodulepath, os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath])
+            else:
                 os.environ['MODULEPATH'] = ':'.join([os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath])
 
         process = subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -71,6 +75,15 @@ def buildSwSets(params, roledata):
             process.stdin.write('module load tools/EasyBuild\n')
         else:
             process.stdin.write('module load EasyBuild\n')
+
+        # remove ebInstallPath since it's not in our datadir and might contain further modules than just EasyBuild,
+        # that could interfer with our installation
+        if params["module_cmd"] == "modulecmd":
+            os.environ['MODULEPATH'] = ':'.join([oldmodulepath, os.path.join(params['installdir'], 'modules', 'all'), defaultSwsetPath])
+        elif params["module_cmd"] == "lmod":
+            # only remove it if it wasn't present before
+            if ebInstallPath not in oldmodulepath.split(":"):
+                process.stdin.write("module unuse " + ebInstallPath + "\n")
 
         if eblockspath:
             process.stdin.write('export PYTHONPATH=$PYTHONPATH:' + eblockspath + '\n')
