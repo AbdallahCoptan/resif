@@ -1,7 +1,7 @@
 #######################################################################################################################
 # Author: Sarah Diehl
 # Mail: hpc-sysadmins@uni.lu
-# Overview: Initializes the directories for configuration and installation and installs EasyBuild
+# Overview: Initialize the directories for configuration and installation and installs EasyBuild
 #######################################################################################################################
 
 import os

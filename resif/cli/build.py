@@ -1,7 +1,11 @@
+#######################################################################################################################
+# Author: Sarah Diehl, Maxime Schmitt
+# Mail: hpc-sysadmins@uni.lu
+# Overview: Install a list of software with EasyBuild
+#######################################################################################################################
+
 import os
-import shutil
 import subprocess
-import sys
 import time
 import re
 
@@ -15,11 +19,16 @@ from resif.utilities.swset import getSoftwareLists
 def cmd_exists(cmd):
     return subprocess.call("type " + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
 
-
+# Build a list of software with EasyBuild
 def buildSwSets(params, roledata):
+
+    # Pull all easyconfig and easyblocks repositories and the paths to them
     eblockspath, econfigspath = source.pullall(params['configdir'], roledata['datadir'], params['swset'])
+
+    # Get lists of software that should be installed from the swset configuration file
     swlists = getSoftwareLists(params['swset'])
 
+    # Set the command line options for the eb command
     options = ""
 
     if 'eb_buildpath' in params and params['eb_buildpath']:
@@ -32,6 +41,7 @@ def buildSwSets(params, roledata):
         options += ' --robot'
     options += ' --module-naming-scheme=' + roledata['mns']
 
+    # Check which module tool is present on the system
     if cmd_exists("lmod"):
         params['module_cmd'] = "lmod"
     elif cmd_exists("modulecmd"):
@@ -40,6 +50,7 @@ def buildSwSets(params, roledata):
         click.echo("Neither modulecmd nor lmod has been found in your path. Please install either one of them to continue. (Preferably choose lmod for more functionalities)", err=True)
         exit(40)
 
+    # For each software set (or list of softwares)
     for swset in swlists.keys():
         click.echo("Building '%s'..." % (swset))
 
@@ -47,7 +58,6 @@ def buildSwSets(params, roledata):
 
         # We add the place where the software will be installed to the MODULEPATH for the duration of the installation
         # so that EasyBuild will not instantly forget that it has installed them after it is done (problematic for dependency resolution)
-        # Part for environment-modules (come later for Lmod)
         # We also add the EB_PREFIX to ensure that EasyBuild will be available
 
         ebInstallPath = os.path.join(params['eb_prefix'], 'modules', 'all')
@@ -57,6 +67,7 @@ def buildSwSets(params, roledata):
         if 'MODULEPATH' in os.environ and os.environ['MODULEPATH']:
             oldmodulepath = os.environ['MODULEPATH']
 
+        # Part for environment-modules
         if params["module_cmd"] == "modulecmd":
             if oldmodulepath:
                 os.environ['MODULEPATH'] = ':'.join([oldmodulepath, os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath])
@@ -65,18 +76,19 @@ def buildSwSets(params, roledata):
 
         process = subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-        # Lmod part for MODULEPATH management
+        # Part for Lmod
         if params["module_cmd"] == "lmod":
             process.stdin.write("module use " + ebInstallPath + "\n")
             process.stdin.write("module use " + defaultSwsetPath + "\n")
             process.stdin.write("module use " + os.path.join(params['installdir'], 'modules', 'all') + "\n")
 
+        # Load EasyBuild module
         if roledata['mns'] == "CategorizedModuleNamingScheme":
             process.stdin.write('module load tools/EasyBuild\n')
         else:
             process.stdin.write('module load EasyBuild\n')
 
-        # remove ebInstallPath since it's not in our datadir and might contain further modules than just EasyBuild,
+        # remove EB_PREFIX since it's not in our data directory and might contain further modules than just EasyBuild,
         # that could interfer with our installation
         if params["module_cmd"] == "modulecmd":
             os.environ['MODULEPATH'] = ':'.join([oldmodulepath, os.path.join(params['installdir'], 'modules', 'all'), defaultSwsetPath])
@@ -85,28 +97,43 @@ def buildSwSets(params, roledata):
             if ebInstallPath not in oldmodulepath.split(":"):
                 process.stdin.write("module unuse " + ebInstallPath + "\n")
 
+        # Add path to easyblocks to PYTHONPATH, so EasyBuild can find them
         if eblockspath:
             process.stdin.write('export PYTHONPATH=$PYTHONPATH:' + eblockspath + '\n')
 
         alreadyInstalled = False
 
         swsetStart = time.time()
+
+        # For each software
         for software in swlists[swset]:
             click.echo("Now starting to install " + software[:-3])
+
+            # Call EasyBuild with all options to install software
             process.stdin.write('eb ' + options + ' --installpath=' + installpath + ' ' + software + '\n')
-            # Command to have at the end of the output the execution code of the last command
+            # Print exit code at the end to know if installation was successful
             process.stdin.write('echo $?\n')
+
             out = ""
+            # Check output of installation line by line
             while True:
                 out = process.stdout.readline()
+                # Check if the module was already present, then no installation happened
                 if re.search("\(module found\)", out) != None:
                     alreadyInstalled = True
+
+                # Try if we arrived at the line with the exit code
                 try:
                     i = int(out)
                 except ValueError:
                     i = -1
+                # If we haven't arrived at the exit code, just print out the line
                 if i < 0:
                     click.echo(out, nl=False)
+                # If we are at the exit code, inform the user about the success or failure of the installation
+                # and break the loop of reading the output
+                # Since our main process is still running, we have to know when we reached the last line with content,
+                # otherwise readline() will wait forever for another line of output that never comes
                 else:
                     if i == 0:
                         if alreadyInstalled:
@@ -121,11 +148,13 @@ def buildSwSets(params, roledata):
 
         process.terminate()
 
+        # Compute how long the installation took
         swsetEnd = time.time()
         swsetDuration = swsetEnd - swsetStart
         m, s = divmod(swsetDuration, 60)
         h, m = divmod(m, 60)
         swsetDurationStr = "%dh %dm %ds" % (h, m, s)
+
         click.echo("Software set '" + swset + "' successfully installed. Build duration: " + swsetDurationStr)
 
     return
@@ -142,21 +171,26 @@ def buildSwSets(params, roledata):
 @click.option('--eb-options', 'eb_options', envvar='RESIF_EB_OPTIONS', help='Any command line options to pass to EasyBuild for the build.')
 @click.argument('swset', required=False)
 def build(**kwargs):
+
+    # Make sure all paths are absolute and with variables expanded
     kwargs['configdir'] = os.path.abspath(os.path.expandvars(kwargs['configdir']))
     kwargs['eb_prefix'] = os.path.abspath(os.path.expandvars(kwargs['eb_prefix']))
 
     if kwargs['eb_buildpath']:
         kwargs['eb_buildpath'] = os.path.abspath(os.path.expandvars(kwargs['eb_buildpath']))
 
+    # Retrieve all variables associated with the given role
     roledata = role.get(kwargs['role'], kwargs['configdir'])
 
     if kwargs['installdir']:
         kwargs['installdir'] = os.path.abspath(os.path.expandvars(kwargs['installdir']))
     else:
+        # Set default installdir to <datadir>/devel
         kwargs['installdir'] = os.path.join(roledata['datadir'], "devel")
 
 
     if kwargs['swset']:
+        # If a yaml file was given for the swset argument
         if kwargs['swset'].endswith(".yaml"):
             if os.path.isfile(kwargs['swset']):
                 click.echo("Loading software sets from file %s" % (kwargs['swset']))
@@ -164,7 +198,9 @@ def build(**kwargs):
             else:
                 click.echo("File %s cannot be found." % (kwargs['swset']), err=True)
                 exit(50)
+        # If we just got a name for the swset
         else:
+            # Look for the respective yaml file in the configuration directory
             swsetfile = kwargs['swset'] + ".yaml"
             if os.path.isfile(os.path.join(kwargs['configdir'], "swsets", swsetfile)):
                 click.echo("Loading software set '%s' from configdir %s" %(kwargs['swset'], kwargs['configdir']))
@@ -172,6 +208,7 @@ def build(**kwargs):
             else:
                 click.echo("Software set %s cannot be found in configdir %s." % (kwargs['swset'], kwargs['configdir']), err=True)
                 exit(50)
+    # If nothing was specified for the software set, use what's defined in the role
     else:
         click.echo("Using default software set defined in role '%s': %s" % (kwargs['role'], roledata['resifile']))
         kwargs['swset'] = roledata['resifile']
@@ -181,6 +218,7 @@ def build(**kwargs):
 
     buildSwSets(kwargs, roledata)
 
+    # Compute how long the installation took
     end = time.time()
     duration = end - start
     m, s = divmod(duration, 60)
