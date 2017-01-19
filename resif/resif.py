@@ -4,7 +4,6 @@
 # Overview: Module that combines all the other modules and provides a CLI.
 #######################################################################################################################
 
-import sys
 import click
 import subprocess
 import pkg_resources
@@ -26,11 +25,12 @@ def resif(ctx, version):
     """
     if ctx.invoked_subcommand is None:
         if version:
-            sys.stdout.write("This is RESIF version " + pkg_resources.require("resif")[0].version + "\n")
+            click.echo("This is RESIF version " + pkg_resources.require("resif")[0].version)
         else:
             subprocess.check_call(['resif', '--help'])
 
 #######################################################################################################################
 
+# Add the different CLI commands
 resif.add_command(init)
 resif.add_command(build)
