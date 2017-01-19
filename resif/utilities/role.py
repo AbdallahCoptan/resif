@@ -1,7 +1,14 @@
+#######################################################################################################################
+# Author: Sarah Diehl
+# Mail: hpc-sysadmins@uni.lu
+# Overview: Manage role configuration files
+#######################################################################################################################
+
 import os
 import yaml
 import getpass
 
+# Create the default role
 def createDefaultRole(params):
     filename = "default.yaml"
     data = {'user': getpass.getuser(),
@@ -18,6 +25,7 @@ def createDefaultRole(params):
     yaml.dump(data, f, default_flow_style=False)
     f.close()
 
+# Get variables from a role
 def get(name, configdir):
     filename = os.path.join(configdir, "roles", name + ".yaml")
 

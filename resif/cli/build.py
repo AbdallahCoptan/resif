@@ -1,8 +1,4 @@
-#######################################################################################################################
-# Author: Sarah Diehl, Maxime Schmitt
-# Mail: hpc-sysadmins@uni.lu
-# Overview: Install a list of software with EasyBuild
-#######################################################################################################################
+
 
 import os
 import subprocess

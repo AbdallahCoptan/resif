@@ -1,8 +1,15 @@
+#######################################################################################################################
+# Author: Sarah Diehl
+# Mail: hpc-sysadmins@uni.lu
+# Overview: Manage easyconfig and easyblocks sources and their configuration files
+#######################################################################################################################
+
 import os
 import yaml
 
 from git import Repo
 
+# Create default configuration with the repositories from hpcugent
 def createDefaultSource(params):
     filename = "default.yaml"
     data = {'priority': 50, 'easyconfigs': {'git': 'https://github.com/hpcugent/easybuild-easyconfigs'}, 'easyblocks': {'git': 'https://github.com/hpcugent/easybuild-easyblocks'}}
@@ -13,14 +20,20 @@ def createDefaultSource(params):
     yaml.dump(data, f, default_flow_style=False)
     f.close()
 
+# Pull/update a repository with the specified branch, commit, tag or ref
+# or just do a symlink if it's a local path
 def __pull(repoinfo, path):
+    # If path is specified, just do a symlink
     if "path" in repoinfo:
         if not os.path.isdir(path):
             os.symlink(repoinfo["path"], path)
 
+    # If it's a git repository
     elif "git" in repoinfo:
+        # if it's already present, just init the Repo object with the path
         if os.path.isdir(path):
             repo = Repo(path)
+        # Otherwise clone the repo
         else:
             repo = Repo.clone_from(repoinfo["git"], path)
 
@@ -41,7 +54,8 @@ def __pull(repoinfo, path):
             git.pull()
 
 
-
+# Pull/update all sources defined in the config directory and from the optional resifile
+# and return their local paths
 def pullall(configdir, datadir, resifile=None):
 
     eblockspathslist = []
@@ -49,8 +63,11 @@ def pullall(configdir, datadir, resifile=None):
 
     sources_config_path = os.path.join(configdir, "sources")
 
+    # Pull/update all sources in the configuration directory
     for sourcefile in os.listdir(sources_config_path):
         name = sourcefile.rstrip(".yaml")
+
+        # Paths to the repo are <datadir>/easy{blocks,configs}/<sourcename>
         eblockspath = os.path.join(datadir, "easyblocks", name)
         econfigspath = os.path.join(datadir, "easyconfigs", name)
 
@@ -63,13 +80,14 @@ def pullall(configdir, datadir, resifile=None):
             eblockspathslist.append((source['priority'],eblockspath))
         if "easyconfigs" in source:
             __pull(source["easyconfigs"], econfigspath)
-            econfigspathslist.append((source['priority'], econfigspath))
+            econfigspathslist.append((source['priority'], os.path.join(econfigspath, "easybuild", "easyconfigs")))
 
     if resifile:
         f = open(resifile, 'r')
         data = yaml.load(f)
         f.close()
 
+        # Check if sources are definied in the resifile
         if 'sources' in data:
             for name in data['sources'].keys():
                 eblockspath = os.path.join(datadir, "easyblocks", name)
@@ -83,7 +101,9 @@ def pullall(configdir, datadir, resifile=None):
                     __pull(source["easyconfigs"], econfigspath)
                     econfigspathslist.append((source['priority'], os.path.join(econfigspath, "easybuild", "easyconfigs")))
 
+    # Sort the paths by their priority
     eblockspathslist.sort(key=lambda x: x[0])
     econfigspathslist.sort(key=lambda x: x[0])
 
+    # Return the lists of paths separated by :
     return (":".join(map(lambda x: x[1], eblockspathslist)), ":".join(map(lambda x: x[1], econfigspathslist)))
