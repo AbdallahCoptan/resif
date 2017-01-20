@@ -9,17 +9,6 @@ import yaml
 
 from git import Repo
 
-# Create default configuration with the repositories from hpcugent
-def createDefaultSource(params):
-    filename = "default.yaml"
-    data = {'priority': 50, 'easyconfigs': {'git': 'https://github.com/hpcugent/easybuild-easyconfigs'}, 'easyblocks': {'git': 'https://github.com/hpcugent/easybuild-easyblocks'}}
-    comment = "# sources/default.yaml\n# Default RESIF EB sources -- set by 'resif init'\n"
-
-    f = open(os.path.join(params["configdir"], "sources", filename), 'w')
-    f.write(comment)
-    yaml.dump(data, f, default_flow_style=False)
-    f.close()
-
 # Pull/update a repository with the specified branch, commit, tag or ref
 # or just do a symlink if it's a local path
 def __pull(repoinfo, path):
