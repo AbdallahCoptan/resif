@@ -10,14 +10,13 @@ import subprocess
 import sys
 import urllib
 import tempfile
+import pkg_resources
 
 import click
 
 from git import Repo
 
 from resif.utilities import source
-from resif.utilities import role
-from resif.utilities import swset
 
 # Initialize the configuration directory
 def initializeConfig(params):
@@ -28,21 +27,11 @@ def initializeConfig(params):
         # clone git repo with configuration
         Repo.clone_from(params['git_resif_control'], params['configdir'])
 
-    # otherwise initialize manually
+    # otherwise initialize from templates
     else:
-        # manually create configdir layout
-        rolespath = os.path.join(params['configdir'], 'roles')
-        sourcespath = os.path.join(params['configdir'], 'sources')
-        swsetspath = os.path.join(params['configdir'], 'swsets')
-        os.makedirs(params["configdir"])
-        os.mkdir(rolespath)
-        os.mkdir(sourcespath)
-        os.mkdir(swsetspath)
+        template = pkg_resources.resource_filename("resif", '/'.join(('templates', 'configdir')))
 
-        # Create the different default configurations files
-        source.createDefaultSource(params)
-        role.createDefaultRole(params)
-        swset.createDefaultSwset(params)
+        subprocess.check_output("rsync --exclude '*.mako' -avzu %s/ %s/" % (template, params['configdir']), shell=True)
 
         # Set the version to 0.0.1
         version_file = open(os.path.join(params["configdir"], "VERSION"), 'w')
