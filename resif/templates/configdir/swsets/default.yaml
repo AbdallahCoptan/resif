@@ -1,0 +1,26 @@
+# -*- mode: yaml -*-
+# swsets/default.yaml
+##################################
+# Default Software set for RESIF #
+##################################
+# For more information on the RESIF software, see
+# https://github.com/ULHPC/resif
+
+###############################
+# Default Toolchains to Build #
+###############################
+# get the list of  supported compiler toolchains using:
+#      eb --list-toolchains
+# See also http://easybuild.readthedocs.io/en/latest/eb_list_toolchains.html
+# Here we focus on the [latest] recommended ones
+
+toolchains:
+- foss/2016b
+
+########################
+# Default Software Set #
+########################
+# Here we define **only one** software set named 'default'
+
+default:
+- HPL/2.2

@@ -1,0 +1,13 @@
+# roles/default.yaml
+# Default RESIF user role -- set by 'resif init'
+
+datadir: /Users/sarah.diehl/.local/resif
+mns: CategorizedModuleNamingScheme
+buildmode: local
+
+# # The group of the installdir will be changed to this after installation
+# group: fluent
+
+# # These environmental variables will be set before building software
+# environment:
+#  EASYBUILD_BUILDPATH: "/dev/shm"
