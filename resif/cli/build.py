@@ -33,7 +33,7 @@ def buildSwSets(params):
     # For each software set (or list of softwares)
     for swset in swlists.keys():
 
-        if 'role' in params:
+        if 'role' in params and params['role']:
             roledata = role.get(params['role'],params['configdir'])
         elif os.path.isfile(os.path.join(params['configdir'], "%s.yaml" % (swset))):
             roledata = role.get(swset, params['configdir'])
@@ -57,7 +57,10 @@ def buildSwSets(params):
         options += ' --module-naming-scheme=' + roledata['mns']
 
         click.echo("Building '%s'..." % (swset))
-
+        
+        if not ('installdir' in params and params['installdir']):
+            params['installdir'] = os.path.join(roledata['datadir'], "devel")
+        
         installpath =  os.path.join(params['installdir'], swset)
 
         # We add the place where the software will be installed to the MODULEPATH for the duration of the installation
