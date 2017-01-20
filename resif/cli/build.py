@@ -16,26 +16,10 @@ def cmd_exists(cmd):
     return subprocess.call("type " + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
 
 # Build a list of software with EasyBuild
-def buildSwSets(params, roledata):
-
-    # Pull all easyconfig and easyblocks repositories and the paths to them
-    eblockspath, econfigspath = source.pullall(params['configdir'], roledata['datadir'], params['swset'])
+def buildSwSets(params):
 
     # Get lists of software that should be installed from the swset configuration file
     swlists = getSoftwareLists(params['swset'])
-
-    # Set the command line options for the eb command
-    options = ""
-
-    if 'eb_buildpath' in params and params['eb_buildpath']:
-        options += ' --buildpath=' + params['eb_buildpath']
-    if 'eb_options' in params and params['eb_options']:
-        options += " " + params["eb_options"]
-    if econfigspath:
-        options += ' --robot=' + econfigspath
-    else:
-        options += ' --robot'
-    options += ' --module-naming-scheme=' + roledata['mns']
 
     # Check which module tool is present on the system
     if cmd_exists("lmod"):
@@ -48,6 +32,30 @@ def buildSwSets(params, roledata):
 
     # For each software set (or list of softwares)
     for swset in swlists.keys():
+
+        if 'role' in params:
+            roledata = role.get(params['role'],params['configdir'])
+        elif os.path.isfile(os.path.join(params['configdir'], "%s.yaml" % (swset))):
+            roledata = role.get(swset, params['configdir'])
+        else:
+            roledata = role.get("default", params['configdir'])
+
+        # Pull all easyconfig and easyblocks repositories and the paths to them
+        eblockspath, econfigspath = source.pullall(params['configdir'], roledata['datadir'], params['swset'])
+
+        # Set the command line options for the eb command
+        options = ""
+
+        if 'eb_buildpath' in params and params['eb_buildpath']:
+            options += ' --buildpath=' + params['eb_buildpath']
+        if 'eb_options' in params and params['eb_options']:
+            options += " " + params["eb_options"]
+        if econfigspath:
+            options += ' --robot=' + econfigspath
+        else:
+            options += ' --robot'
+        options += ' --module-naming-scheme=' + roledata['mns']
+
         click.echo("Building '%s'..." % (swset))
 
         installpath =  os.path.join(params['installdir'], swset)
@@ -161,11 +169,11 @@ def buildSwSets(params, roledata):
 @click.option('--configdir', 'configdir', envvar='RESIF_CONFIGDIR', default='$HOME/.config/resif', help='Defines an alternative path to load the configuration from.')
 # Software building variables
 @click.option('--installdir', 'installdir', envvar='RESIF_INSTALLDIR', help="Use if you don't want to deploy the software inside the <datadir>. Softwares will then be deployed in <installdir>/<swset>/modules")
-@click.option('--role', envvar='RESIF_ROLE', default='default', help='Role configuration to use.')
+@click.option('--role', envvar='RESIF_ROLE', help='Role configuration to use.')
 @click.option('--eb-prefix', 'eb_prefix', envvar='EASYBUILD_PREFIX', default='$HOME/.local/easybuild', help='Prefix directory for Easybuild installation.')
 @click.option('--eb-buildpath', 'eb_buildpath', envvar='EASYBUILD_BUILDPATH', help='EasyBuild buildpath.')
 @click.option('--eb-options', 'eb_options', envvar='RESIF_EB_OPTIONS', help='Any command line options to pass to EasyBuild for the build.')
-@click.argument('swset', required=False)
+@click.argument('swset')
 def build(**kwargs):
 
     # Make sure all paths are absolute and with variables expanded
@@ -175,44 +183,32 @@ def build(**kwargs):
     if kwargs['eb_buildpath']:
         kwargs['eb_buildpath'] = os.path.abspath(os.path.expandvars(kwargs['eb_buildpath']))
 
-    # Retrieve all variables associated with the given role
-    roledata = role.get(kwargs['role'], kwargs['configdir'])
-
     if kwargs['installdir']:
         kwargs['installdir'] = os.path.abspath(os.path.expandvars(kwargs['installdir']))
-    else:
-        # Set default installdir to <datadir>/devel
-        kwargs['installdir'] = os.path.join(roledata['datadir'], "devel")
 
-
-    if kwargs['swset']:
-        # If a yaml file was given for the swset argument
-        if kwargs['swset'].endswith(".yaml"):
-            if os.path.isfile(kwargs['swset']):
-                click.echo("Loading software sets from file %s" % (kwargs['swset']))
-                kwargs['swset'] = os.path.abspath(os.path.expandvars(kwargs['swset']))
-            else:
-                click.echo("File %s cannot be found." % (kwargs['swset']), err=True)
-                exit(50)
-        # If we just got a name for the swset
+    # If a yaml file was given for the swset argument
+    if kwargs['swset'].endswith(".yaml"):
+        if os.path.isfile(kwargs['swset']):
+            click.echo("Loading software sets from file %s" % (kwargs['swset']))
+            kwargs['swset'] = os.path.abspath(os.path.expandvars(kwargs['swset']))
         else:
-            # Look for the respective yaml file in the configuration directory
-            swsetfile = kwargs['swset'] + ".yaml"
-            if os.path.isfile(os.path.join(kwargs['configdir'], "swsets", swsetfile)):
-                click.echo("Loading software set '%s' from configdir %s" %(kwargs['swset'], kwargs['configdir']))
-                kwargs['swset'] = os.path.join(kwargs['configdir'], "swsets", swsetfile)
-            else:
-                click.echo("Software set %s cannot be found in configdir %s." % (kwargs['swset'], kwargs['configdir']), err=True)
-                exit(50)
-    # If nothing was specified for the software set, use what's defined in the role
+            click.echo("File %s cannot be found." % (kwargs['swset']), err=True)
+            exit(50)
+    # If we just got a name for the swset
     else:
-        click.echo("Using default software set defined in role '%s': %s" % (kwargs['role'], roledata['resifile']))
-        kwargs['swset'] = roledata['resifile']
+        # Look for the respective yaml file in the configuration directory
+        swsetfile = kwargs['swset'] + ".yaml"
+        if os.path.isfile(os.path.join(kwargs['configdir'], "swsets", swsetfile)):
+            click.echo("Loading software set '%s' from configdir %s" %(kwargs['swset'], kwargs['configdir']))
+            kwargs['swset'] = os.path.join(kwargs['configdir'], "swsets", swsetfile)
+        else:
+            click.echo("Software set %s cannot be found in configdir %s." % (kwargs['swset'], kwargs['configdir']), err=True)
+            exit(50)
 
     click.echo("Building the software sets...")
     start = time.time()
 
-    buildSwSets(kwargs, roledata)
+    buildSwSets(kwargs)
 
     # Compute how long the installation took
     end = time.time()
