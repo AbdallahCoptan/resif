@@ -12,6 +12,8 @@ import urllib
 import tempfile
 import pkg_resources
 import re
+import jinja2
+import fnmatch
 
 import click
 
@@ -23,16 +25,29 @@ from resif.utilities import source
 def initializeConfig(params):
     click.echo("Creating RESIF configuration.")
 
-    # If a git reposistory was specified for the configuration, simply pull it
+    # If a git repository was specified for the configuration, simply pull it
     if params["git_resif_control"]:
         # clone git repo with configuration
         Repo.clone_from(params['git_resif_control'], params['configdir'])
 
     # otherwise initialize from templates
     else:
-        template = pkg_resources.resource_filename("resif", '/'.join(('templates', 'configdir')))
+        # find out where the templates/configdir directory is on the filesystem
+        templatedir = pkg_resources.resource_filename("resif", '/'.join(('templates', 'configdir')))
 
-        shutil.copytree(template, params['configdir'], ignore=shutil.ignore_patterns('*.template'))
+        # copy the structure and all files except .yaml files to the configuration directory
+        shutil.copytree(templatedir, params['configdir'], ignore=shutil.ignore_patterns('*.yaml'))
+
+        # create a Jinja2 environment that finds templates in the templates/configdir folder within the package
+        env = jinja2.Environment(loader=jinja2.PackageLoader('resif', os.path.join('templates','configdir')))
+
+        # find all yaml files in templates/configdir, run them through the template engine
+        # and write to configdir
+        for root, dirnames, filenames in os.walk(templatedir):
+            for filename in fnmatch.filter(filenames, '*.yaml'):
+                relfilepath = os.path.join(os.path.relpath(root, templatedir), filename)
+                template = env.get_template(relfilepath)
+                template.stream(params).dump(os.path.join(params['configdir'], relfilepath))
 
         # Set the version to 0.0.1
         version_file = open(os.path.join(params["configdir"], "VERSION"), 'w')
