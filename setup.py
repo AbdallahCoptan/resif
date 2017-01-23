@@ -100,6 +100,7 @@ setup(
         'click >= 3.3',
         'GitPython >= 0.3',
         'PyYaml >= 3.10',
+        'jinja2 >= 2.9.4',
     ],
 
 
