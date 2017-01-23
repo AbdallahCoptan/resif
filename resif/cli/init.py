@@ -138,7 +138,7 @@ def init(**kwargs):
             exit(50)
 
     if kwargs['init_version'] and not re.match("^[0-9]+\.[0-9]+\.[0-9]+$", kwargs['init_version']):
-        click.echo("Invalid initial version %s." % (kwargs['init_version']), err=True)
+        click.echo("Invalid initial version %s. The format must be <major>.<minor>.<patch>." % (kwargs['init_version']), err=True)
         exit(50)
 
     # Initialize configuration directory
