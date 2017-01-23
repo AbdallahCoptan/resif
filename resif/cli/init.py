@@ -11,6 +11,7 @@ import sys
 import urllib
 import tempfile
 import pkg_resources
+import re
 
 import click
 
@@ -35,7 +36,10 @@ def initializeConfig(params):
 
         # Set the version to 0.0.1
         version_file = open(os.path.join(params["configdir"], "VERSION"), 'w')
-        version_file.write("0.0.1")
+        if params['init_version']:
+            version_file.write(params['init_version'])
+        else:
+            version_file.write("0.0.1")
         version_file.close()
 
     click.echo("Configuration created successfully.")
@@ -105,6 +109,7 @@ def bootstrapEB(prefix, mns, module_tool):
 @click.option('--eb-module-tool', 'eb_module_tool', envvar='EASYBUILD_MODULES_TOOL', type=click.Choice(['Lmod', 'EnvironmentModulesTcl', 'EnvironmentModulesC']), default='Lmod', help='Name of module tool.')
 @click.option('--mns', 'mns', envvar='EASYBUILD_MODULE_NAMING_SCHEME', type=click.Choice(['EasyBuildMNS', 'HierarchicalMNS', 'CategorizedModuleNamingScheme', 'CategorizedHMNS']), default='CategorizedModuleNamingScheme', help='Module Naming Scheme to be used.')
 @click.option('--overwrite', 'overwrite', flag_value=True, envvar='RESIF_OVERWRITE', help='Set this flag if you want to overwrite any existing directories in the CONFIGDIR and DATADIR.')
+@click.option('--init-version', 'init_version', default="0.0.1", help='Set the initial version for the software deployment.')
 def init(**kwargs):
 
     # Make sure all paths are absolute and with variables expanded
@@ -119,7 +124,7 @@ def init(**kwargs):
             shutil.rmtree(kwargs["configdir"], True)
         # Otherwise exit, tell the user why and point to the overwrite option
         else:
-            sys.stderr.write("An installation is already present at your configdir: " + kwargs["configdir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.\n" + "\033[93m" + "WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\033[0m\n")
+            click.echo("An installation is already present at your configdir: " + kwargs["configdir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.\n" + "\033[93m" + "WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\033[0m\n", err=True)
             exit(50)
 
     # If the data directory already exists
@@ -129,8 +134,12 @@ def init(**kwargs):
             shutil.rmtree(kwargs["datadir"], True)
         # Otherwise exit, tell the user why and point to the overwrite option
         else:
-            sys.stderr.write("An installation is already present at your datadir: " + kwargs["datadir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.\n" + "\033[93m" + "WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\033[0m\n")
+            click.echo("An installation is already present at your datadir: " + kwargs["datadir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.\n" + "\033[93m" + "WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\033[0m\n", err=True)
             exit(50)
+
+    if kwargs['init_version'] and not re.match("^[0-9]+\.[0-9]+\.[0-9]+$", kwargs['init_version']):
+        click.echo("Invalid initial version %s." % (kwargs['init_version']), err=True)
+        exit(50)
 
     # Initialize configuration directory
     initializeConfig(kwargs)
