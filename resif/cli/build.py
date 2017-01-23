@@ -112,7 +112,7 @@ def buildSwSets(params):
 
             # Call EasyBuild with all options to install software
             try:
-                output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+                output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True, executable="/bin/bash")
                 click.echo(output)
                 if re.search("\(module found\)", output) != None:
                     click.echo(software[:-3] + " was already installed. Nothing to be done.")
@@ -120,7 +120,7 @@ def buildSwSets(params):
                     click.echo('Successfully installed ' + software[:-3])
             except subprocess.CalledProcessError, e:
                 click.echo(e.output)
-                click.echo('Failed to install ' + software[:-3] + '\n' + 'Operation failed with return code ' + e.returncode, err=True)
+                click.echo('Failed to install %s.\nOperation failed with return code %s.' % (software[:-3], e.returncode), err=True)
                 exit(e.returncode)
 
         # Compute how long the installation took
