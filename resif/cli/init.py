@@ -31,7 +31,7 @@ def initializeConfig(params):
     else:
         template = pkg_resources.resource_filename("resif", '/'.join(('templates', 'configdir')))
 
-        subprocess.check_output("rsync --exclude '*.mako' -avzu %s/ %s/" % (template, params['configdir']), shell=True)
+        shutil.copytree(template, params['configdir'], ignore=shutil.ignore_patterns('*.template'))
 
         # Set the version to 0.0.1
         version_file = open(os.path.join(params["configdir"], "VERSION"), 'w')
