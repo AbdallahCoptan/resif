@@ -67,6 +67,8 @@ def buildSwSets(params):
         # so that EasyBuild will not instantly forget that it has installed them after it is done (problematic for dependency resolution)
         # We also add the EB_PREFIX to ensure that EasyBuild will be available
 
+        precommands = ""
+
         ebInstallPath = os.path.join(params['eb_prefix'], 'modules', 'all')
         defaultSwsetPath = os.path.join(params['installdir'], "default")
 
@@ -76,39 +78,29 @@ def buildSwSets(params):
 
         # Part for environment-modules
         if params["module_cmd"] == "modulecmd":
-            if oldmodulepath:
-                os.environ['MODULEPATH'] = ':'.join([oldmodulepath, os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath])
-            else:
-                os.environ['MODULEPATH'] = ':'.join([os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath])
-
-        process = subprocess.Popen('/bin/bash', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
+            precommands += 'export MODULEPATH=$MODULEPATH:%s;' % (':'.join([os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath]))
         # Part for Lmod
-        if params["module_cmd"] == "lmod":
-            process.stdin.write("module use " + ebInstallPath + "\n")
-            process.stdin.write("module use " + defaultSwsetPath + "\n")
-            process.stdin.write("module use " + os.path.join(params['installdir'], 'modules', 'all') + "\n")
+        elif params["module_cmd"] == "lmod":
+            precommands += "module use %s; module use %s; module use %s;" % (ebInstallPath, defaultSwsetPath, os.path.join(params['installdir'], 'modules', 'all'))
 
         # Load EasyBuild module
         if roledata['mns'] == "CategorizedModuleNamingScheme":
-            process.stdin.write('module load tools/EasyBuild\n')
+            precommands += 'module load tools/EasyBuild;'
         else:
-            process.stdin.write('module load EasyBuild\n')
+            precommands += 'module load EasyBuild;'
 
         # remove EB_PREFIX since it's not in our data directory and might contain further modules than just EasyBuild,
         # that could interfer with our installation
         if params["module_cmd"] == "modulecmd":
-            os.environ['MODULEPATH'] = ':'.join([oldmodulepath, os.path.join(params['installdir'], 'modules', 'all'), defaultSwsetPath])
+            precommands += 'export MODULEPATH=%s;' % (':'.join([oldmodulepath, os.path.join(params['installdir'], 'modules', 'all'), defaultSwsetPath]))
         elif params["module_cmd"] == "lmod":
             # only remove it if it wasn't present before
             if ebInstallPath not in oldmodulepath.split(":"):
-                process.stdin.write("module unuse " + ebInstallPath + "\n")
+                precommands += "module unuse %s; " % (ebInstallPath)
 
         # Add path to easyblocks to PYTHONPATH, so EasyBuild can find them
         if eblockspath:
-            process.stdin.write('export PYTHONPATH=$PYTHONPATH:' + eblockspath + '\n')
-
-        alreadyInstalled = False
+            precommands += 'export PYTHONPATH=$PYTHONPATH:%s;' % (eblockspath)
 
         swsetStart = time.time()
 
@@ -116,44 +108,20 @@ def buildSwSets(params):
         for software in swlists[swset]:
             click.echo("Now starting to install " + software[:-3])
 
+            command = precommands + 'eb ' + options + ' --installpath=' + installpath + ' ' + software + '\n'
+
             # Call EasyBuild with all options to install software
-            process.stdin.write('eb ' + options + ' --installpath=' + installpath + ' ' + software + '\n')
-            # Print exit code at the end to know if installation was successful
-            process.stdin.write('echo $?\n')
-
-            out = ""
-            # Check output of installation line by line
-            while True:
-                out = process.stdout.readline()
-                # Check if the module was already present, then no installation happened
-                if re.search("\(module found\)", out) != None:
-                    alreadyInstalled = True
-
-                # Try if we arrived at the line with the exit code
-                try:
-                    i = int(out)
-                except ValueError:
-                    i = -1
-                # If we haven't arrived at the exit code, just print out the line
-                if i < 0:
-                    click.echo(out, nl=False)
-                # If we are at the exit code, inform the user about the success or failure of the installation
-                # and break the loop of reading the output
-                # Since our main process is still running, we have to know when we reached the last line with content,
-                # otherwise readline() will wait forever for another line of output that never comes
+            try:
+                output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+                click.echo(output)
+                if re.search("\(module found\)", output) != None:
+                    click.echo(software[:-3] + " was already installed. Nothing to be done.")
                 else:
-                    if i == 0:
-                        if alreadyInstalled:
-                            click.echo(software[:-3] + " was already installed. Nothing to be done.\n")
-                            alreadyInstalled = False
-                        else:
-                            click.echo('Successfully installed ' + software[:-3])
-                    else:
-                        click.echo('Failed to install ' + software[:-3] + '\n' + 'Operation failed with return code ' + out, err=True)
-                        exit(out)
-                    break
-
-        process.terminate()
+                    click.echo('Successfully installed ' + software[:-3])
+            except subprocess.CalledProcessError, e:
+                click.echo(e.output)
+                click.echo('Failed to install ' + software[:-3] + '\n' + 'Operation failed with return code ' + e.returncode, err=True)
+                exit(e.returncode)
 
         # Compute how long the installation took
         swsetEnd = time.time()
