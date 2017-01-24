@@ -110,7 +110,7 @@ def getEasyConfig(ebfile, ebpaths):
 
 # Get a hash with information from which easyconfig files to build the softwares in a specific software set
 # and whether to try with a different toolchain
-def getSoftwareLists (resifile, swsetname, ebpaths):
+def getSoftwares(resifile, swsetname, ebpaths):
 
     ebpathslist = ebpaths.split(":")
 
