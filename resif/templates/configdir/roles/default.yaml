@@ -10,4 +10,4 @@ buildmode: local
 
 # # These environmental variables will be set before building software
 # environment:
-#  EASYBUILD_BUILDPATH: "/dev/shm"
+#   EASYBUILD_BUILDPATH: "/dev/shm"
