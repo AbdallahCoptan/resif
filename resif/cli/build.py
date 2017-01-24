@@ -15,6 +15,11 @@ from resif.utilities import source
 from resif.utilities import role
 from resif.utilities.swset import getSoftwareSets, getSoftwares
 
+# Determine correct install directory
+def getInstallDir(configdir, datadir):
+    # just a dummy for now that always returns the devel directory
+    return os.path.join(datadir, "devel")
+
 # Check if a command exists in the current environment
 def cmd_exists(cmd):
     return subprocess.call("type " + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
@@ -63,7 +68,7 @@ def buildSwSets(params):
         click.echo("Building '%s'..." % (swset))
         
         if not ('installdir' in params and params['installdir']):
-            params['installdir'] = os.path.join(roledata['datadir'], "devel")
+            getInstallDir(params['configdir'], roledata['datadir'])
         
         installpath =  os.path.join(params['installdir'], swset)
 
