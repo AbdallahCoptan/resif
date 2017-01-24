@@ -15,7 +15,7 @@
 # Here we focus on the [latest] recommended ones
 
 toolchains:
-- foss/2016b
+- foss/2016.09
 
 ########################
 # Default Software Set #
