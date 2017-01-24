@@ -134,7 +134,7 @@ def buildSwSets(params):
         for software, swinfohash in softwares.iteritems():
             click.echo("Now starting to install " + software)
 
-            if swinfohash['ebfile']:
+            if swinfohash['ebfile'] and (('try' not in swinfohash) or params['enable_try']):
                 if 'try' in swinfohash and swinfohash['try']:
                     command = "%s eb %s --installpath=%s --try-toolchain=%s %s\n" % (precommands, options, installpath, swinfohash['try'], swinfohash['ebfile'])
                 else:
@@ -179,6 +179,7 @@ def buildSwSets(params):
 @click.option('--eb-prefix', 'eb_prefix', envvar='EASYBUILD_PREFIX', default='$HOME/.local/easybuild', help='Prefix directory for Easybuild installation.')
 @click.option('--eb-buildpath', 'eb_buildpath', envvar='EASYBUILD_BUILDPATH', help='EasyBuild buildpath.')
 @click.option('--eb-options', 'eb_options', envvar='RESIF_EB_OPTIONS', help='Any command line options to pass to EasyBuild for the build.')
+@click.option('--enable-try', 'enable_try', flag_value=True, help='Set this flag if you want to try building with similar toolchains if no easyconfig file is found.')
 @click.argument('swset')
 def build(**kwargs):
 
