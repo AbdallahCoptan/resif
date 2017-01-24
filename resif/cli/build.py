@@ -5,6 +5,7 @@
 #######################################################################################################################
 
 import os
+import grp
 import subprocess
 import time
 import re
@@ -14,6 +15,15 @@ import click
 from resif.utilities import source
 from resif.utilities import role
 from resif.utilities.swset import getSoftwareSets, getSoftwares
+
+def chgrp(path, groupname):
+    gid = grp.getgrnam(groupname).gr_gid
+    os.chown(path, -1, gid)
+    for root, dirs, files in os.walk(path):
+        for d in dirs:
+            os.chown(os.path.join(root, d), -1, gid)
+        for f in files:
+            os.chown(os.path.join(root, f), -1, gid)
 
 # Determine correct install directory
 def getInstallDir(configdir, datadir):
@@ -150,6 +160,10 @@ def buildSwSets(params):
         m, s = divmod(swsetDuration, 60)
         h, m = divmod(m, 60)
         swsetDurationStr = "%dh %dm %ds" % (h, m, s)
+
+        if 'group' in roledata and roledata['group']:
+            click.echo("Changing permissions of installation directory. This might take a few minutes.")
+            chgrp(installpath, roledata['group'])
 
         click.echo("Software set '" + swset + "' successfully installed. Build duration: " + swsetDurationStr)
 
