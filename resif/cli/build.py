@@ -1,4 +1,8 @@
-
+#######################################################################################################################
+# Author: Sarah Diehl
+# Mail: hpc-sysadmins@uni.lu
+# Overview: Build list of software defined in a resifile
+#######################################################################################################################
 
 import os
 import subprocess
@@ -9,7 +13,7 @@ import click
 
 from resif.utilities import source
 from resif.utilities import role
-from resif.utilities.swset import getSoftwareLists
+from resif.utilities.swset import getSoftwareSets, getSoftwares
 
 # Check if a command exists in the current environment
 def cmd_exists(cmd):
@@ -19,7 +23,7 @@ def cmd_exists(cmd):
 def buildSwSets(params):
 
     # Get lists of software that should be installed from the swset configuration file
-    swlists = getSoftwareLists(params['swset'])
+    swsets = getSoftwareSets(params['swset'])
 
     # Check which module tool is present on the system
     if cmd_exists("lmod"):
@@ -30,8 +34,8 @@ def buildSwSets(params):
         click.echo("Neither modulecmd nor lmod has been found in your path. Please install either one of them to continue. (Preferably choose lmod for more functionalities)", err=True)
         exit(40)
 
-    # For each software set (or list of softwares)
-    for swset in swlists.keys():
+    # For each software set
+    for swset in swsets:
 
         if 'role' in params and params['role']:
             roledata = role.get(params['role'],params['configdir'])
@@ -104,24 +108,31 @@ def buildSwSets(params):
 
         swsetStart = time.time()
 
+        softwares = getSoftwares(params['swset'],swset,econfigspath)
+
         # For each software
-        for software in swlists[swset]:
-            click.echo("Now starting to install " + software[:-3])
+        for software, swinfohash in softwares.iteritems():
+            click.echo("Now starting to install " + software)
 
-            command = precommands + 'eb ' + options + ' --installpath=' + installpath + ' ' + software + '\n'
-
-            # Call EasyBuild with all options to install software
-            try:
-                output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True, executable="/bin/bash")
-                click.echo(output)
-                if re.search("\(module found\)", output) != None:
-                    click.echo(software[:-3] + " was already installed. Nothing to be done.")
+            if swinfohash['ebfile']:
+                if 'try' in swinfohash and swinfohash['try']:
+                    command = "%s eb %s --installpath=%s --try-toolchain=%s %s\n" % (precommands, options, installpath, swinfohash['try'], swinfohash['ebfile'])
                 else:
-                    click.echo('Successfully installed ' + software[:-3])
-            except subprocess.CalledProcessError, e:
-                click.echo(e.output)
-                click.echo('Failed to install %s.\nOperation failed with return code %s.' % (software[:-3], e.returncode), err=True)
-                exit(e.returncode)
+                    command = "%s eb %s --installpath=%s %s\n" % (precommands, options, installpath, swinfohash['ebfile'])
+
+                # Call EasyBuild with all options to install software
+                try:
+                    output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True, executable="/bin/bash")
+                    click.echo(output)
+                    if re.search("\(module found\)", output) != None:
+                        click.echo(software + " was already installed. Nothing to be done.")
+                    else:
+                        click.echo('Successfully installed ' + software)
+                except subprocess.CalledProcessError, e:
+                    click.echo(e.output)
+                    click.echo('Failed to install %s.\nOperation failed with return code %s.' % (software, e.returncode), err=True)
+            else:
+                click.echo("Failed to install %s.\nNo easyconfig file found." % (software), err=True)
 
         # Compute how long the installation took
         swsetEnd = time.time()
