@@ -165,13 +165,26 @@ def build(**kwargs):
 
     # Make sure all paths are absolute and with variables expanded
     kwargs['configdir'] = os.path.abspath(os.path.expandvars(kwargs['configdir']))
+    if not os.path.isdir(kwargs['configdir']):
+        click.echo("Invalid configdir %s." % kwargs['configdir'], err=True)
+        exit(50)
+
     kwargs['eb_prefix'] = os.path.abspath(os.path.expandvars(kwargs['eb_prefix']))
+    if not os.path.isdir(kwargs['eb_prefix']):
+        click.echo("Invalid EasyBuild prefix %s." % kwargs['eb_prefix'], err=True)
+        exit(50)
 
     if kwargs['eb_buildpath']:
         kwargs['eb_buildpath'] = os.path.abspath(os.path.expandvars(kwargs['eb_buildpath']))
+        if not os.path.isdir(kwargs['eb_buildpath']):
+            click.echo("Invalid EasyBuild buildpath %s." % kwargs['eb_buildpath'], err=True)
+            exit(50)
 
     if kwargs['installdir']:
         kwargs['installdir'] = os.path.abspath(os.path.expandvars(kwargs['installdir']))
+        if not os.path.isdir(kwargs['installdir']):
+            click.echo("Invalid installdir %s." % kwargs['installdir'], err=True)
+            exit(50)
 
     # If a yaml file was given for the swset argument
     if kwargs['swset'].endswith(".yaml"):
