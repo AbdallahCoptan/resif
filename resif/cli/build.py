@@ -68,7 +68,7 @@ def buildSwSets(params):
         click.echo("Building '%s'..." % (swset))
         
         if not ('installdir' in params and params['installdir']):
-            getInstallDir(params['configdir'], roledata['datadir'])
+            params['installdir'] = getInstallDir(params['configdir'], roledata['datadir'])
         
         installpath =  os.path.join(params['installdir'], swset)
 
@@ -77,6 +77,11 @@ def buildSwSets(params):
         # We also add the EB_PREFIX to ensure that EasyBuild will be available
 
         precommands = ""
+
+        # If additional environmental variables are defined in the role, export them
+        if 'environment' in roledata and isinstance(roledata['environment'], dict):
+            for variablename, value in roledata['environment'].iteritems():
+                precommands += 'export %s=%s;' % (variablename, value)
 
         ebInstallPath = os.path.join(params['eb_prefix'], 'modules', 'all')
         defaultSwsetPath = os.path.join(params['installdir'], "default")
