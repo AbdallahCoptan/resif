@@ -65,7 +65,12 @@ def checkEasyConfig (ebfile, ebpaths):
 
 # Look for similar easyconfigs (same toolchain, same year)
 def findSimilarEasyConfig (ebfile, ebpaths):
-    swname, swversion, toolchain, toolchainversion = ebfile.split("-")
+
+    try:
+        swname, swversion, toolchain, toolchainversion = ebfile.split("-")
+    except ValueError:
+        return None
+
     toolchainversion = toolchainversion[:-3]
 
     # extract the year from the toolchainversion, if it's a year-based version
