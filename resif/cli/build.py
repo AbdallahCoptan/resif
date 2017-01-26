@@ -267,6 +267,6 @@ def build(**kwargs):
     m, s = divmod(duration, 60)
     h, m = divmod(m, 60)
     durationFormated = "%dh %dm %ds" % (h, m, s)
-    click.echo("All software sets successfully installed. Build duration: " + durationFormated)
+    click.echo("\nAll software sets successfully installed. Build duration: " + durationFormated)
 
     return
