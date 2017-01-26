@@ -96,7 +96,7 @@ def buildSwSets(params):
 
         # If additional environmental variables are defined in the role, export them
         if 'environment' in roledata and isinstance(roledata['environment'], dict):
-            for variablename, value in roledata['environment'].iteritems():
+            for variablename, value in roledata['environment'].items():
                 precommands += 'export %s=%s;' % (variablename, value)
 
         ebInstallPath = os.path.join(params['eb_prefix'], 'modules', 'all')
@@ -137,7 +137,7 @@ def buildSwSets(params):
         softwares = getSoftwares(params['swset'],swset,econfigspath)
 
         # For each software
-        for software, swinfohash in softwares.iteritems():
+        for software, swinfohash in softwares.items():
             click.echo("Now starting to install " + software)
 
             if swinfohash['ebfile'] and (('try' not in swinfohash) or params['enable_try']):
@@ -156,7 +156,7 @@ def buildSwSets(params):
                     else:
                         click.echo('Successfully installed ' + software)
                         statistics['success'].append(software)
-                except subprocess.CalledProcessError, e:
+                except subprocess.CalledProcessError as e:
                     click.echo(e.output)
                     match = re.search("Results of the build can be found in the log file\(s\) (.*)", e.output)
                     if match:
