@@ -37,6 +37,12 @@ def cmd_exists(cmd):
 # Build a list of software with EasyBuild
 def buildSwSets(params):
 
+    # Keep track of software build success & failure
+    statistics = {'success': [],
+                  'already_installed': [],
+                  'no_ebfile': [],
+                  'failed': []}
+
     # Get lists of software that should be installed from the swset configuration file
     swsets = getSoftwareSets(params['swset'])
 
@@ -146,13 +152,22 @@ def buildSwSets(params):
                     click.echo(output)
                     if re.search("\(module found\)", output) != None:
                         click.echo(software + " was already installed. Nothing to be done.")
+                        statistics['already_installed'].append(software)
                     else:
                         click.echo('Successfully installed ' + software)
+                        statistics['success'].append(software)
                 except subprocess.CalledProcessError, e:
                     click.echo(e.output)
+                    match = re.search("Results of the build can be found in the log file\(s\) (.*)", e.output)
+                    if match:
+                      logfile = match.group(1)
+                      statistics['failed'].append("%s (log: %s)" % (software,logfile))
+                    else:
+                        statistics['failed'].append(software)
                     click.echo('Failed to install %s.\nOperation failed with return code %s.' % (software, e.returncode), err=True)
             else:
                 click.echo("Failed to install %s.\nNo easyconfig file found." % (software), err=True)
+                statistics['no_ebfile'].append(software)
 
         # Compute how long the installation took
         swsetEnd = time.time()
@@ -166,6 +181,22 @@ def buildSwSets(params):
             chgrp(installpath, roledata['group'])
 
         click.echo("Software set '" + swset + "' successfully installed. Build duration: " + swsetDurationStr)
+
+    click.echo("=== SUMMARY STATISTICS ===")
+    click.echo("Successfully installed: %s" % (len(statistics['success'])))
+    click.echo("Already installed:      %s" % (len(statistics['already_installed'])))
+    click.echo("No .eb file found:      %s" % (len(statistics['no_ebfile'])))
+    click.echo("Build failed:           %s" % (len(statistics['failed'])))
+
+    if statistics['no_ebfile']:
+        click.echo("\nList of softwares without .eb file:")
+        for software in statistics['no_ebfile']:
+            click.echo("- %s" % (software))
+
+    if statistics['failed']:
+        click.echo("\nList of failed softwares:")
+        for software in statistics['failed']:
+            click.echo("- %s" % (software))
 
     return
 
