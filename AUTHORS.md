@@ -13,7 +13,7 @@ The main developers, responsible for the design and implementation of [RESIF](ht
 | Name               | Institute                       | Email                                |
 |--------------------|---------------------------------|--------------------------------------|
 | Sebastien Varrette | University of Luxembourg        | <Sebastien.Varrette@uni.lu>          |
-| Sarah Diel         | University of Luxembourg        | <Sarah.Dielh@uni.lu>                 |
+| Sarah Diehl        | University of Luxembourg        | <Sarah.Diehl@uni.lu>                 |
 | Valentin Plugaru   | University of Luxembourg        | <Valentin.Plugaru@uni.lu>            |
 | Hyacinthe Cartiaux | University of Luxembourg        | <Hyacinthe.Cartiaux@uni.lu>          |
 
