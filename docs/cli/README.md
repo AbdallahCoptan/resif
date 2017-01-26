@@ -36,8 +36,7 @@ In practice, it performs the following actions:
           * `<datadir>/easyblocks/<sourcename>/`, a clone of the [easybuild-easyblocks repository](https://github.com/hpcugent/easybuild-easyblocks) which hosts implementations of install procedures
 
 3. install [Easybuild](https://hpcugent.github.io/easybuild) according to the official [bootstrapping procedure](http://easybuild.readthedocs.io/en/latest/Installation.html#bootstrapping-easybuild) in `EASYBUILD_PREFIX=$HOME/.local/easybuild`
-4. creates `<installdir>`
-5. (ask to ) export a set of Environment variables:
+4. (ask to ) export a set of Environment variables:
      - `$EASYBUILD_PREFIX`
      - `$EASYBUILD_MODULES_TOOL` (to 'Lmod')
 
@@ -61,4 +60,4 @@ Then, this command performs the following tasks:
     * else if defined as `<software>/<version>`:
          - for each toolchain `<toolchain>`, find the appropriate [list of] `*.eb` source matching these constraints
                * if found, install them
-               * else, find the [list of] `*.eb` files where the toolchain is as close as possible from the expected one and [try to] build them using `eb --robot --try-toolchain=<toolchain>,<toolchainversion> [...]`
+               * (optional) else, try to find a `*.eb` file where the toolchain is from the same year as the expected one and [try to] build it using `eb --robot --try-toolchain=<toolchain>,<toolchainversion> [...]`
