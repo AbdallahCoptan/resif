@@ -11,8 +11,7 @@ Here are all the __RESIF__ variables that can be set, followed by their descript
 
 | RESIF Variable | Description                                                                                                | Default (if any)                          |
 |----------------|------------------------------------------------------------------------------------------------------------|-------------------------------------------|
-| `user`         | User operating the process                                                                                 | `<whoami>`                                |
-| `group`        | Group used for operating the process                                                                       |                                           |
+| `group`        | Group that will own `<installdir>`                                                                         |                                           |
 | `configdir`    | Configuration directory                                                                                    | `$HOME/.config/resif/`                    |
 | `resifile`     | RESIF file to use, defining the software set__s__ to deploy                                                | `<configdir>/swsets/default.yaml`         |
 | `datadir`      | Local Data directory                                                                                       | `$HOME/.local/resif/`                     |
@@ -49,10 +48,9 @@ In addition, as RESIF interacts with [Easybuild](https://hpcugent.github.io/easy
 | `eb_installpath` | `$EASYBUILD_INSTALLPATH`  | Root directory for installed software (`software/`) and modules (`modules/all/`) | `<eb_prefix>`            |
 
 
-### `<user>`, `<group>`: Process owner/group
+### `<group>`: Software group
 
-* all processes / jobs are run as this user `<user>` (__Default__: `$(whoami)`);
-* all [sub]directory are assuming having read/write access for that user and/or group
+* after building the software the group of the `<installdir>` will be changed to this group
 
 ### `<configdir>`: Configuration directory
 
