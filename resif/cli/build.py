@@ -182,7 +182,7 @@ def buildSwSets(params):
 
         click.echo("Software set '" + swset + "' successfully installed. Build duration: " + swsetDurationStr)
 
-    click.echo("=== SUMMARY STATISTICS ===")
+    click.echo("\n=== SUMMARY STATISTICS ===")
     click.echo("Successfully installed: %s" % (len(statistics['success'])))
     click.echo("Already installed:      %s" % (len(statistics['already_installed'])))
     click.echo("No .eb file found:      %s" % (len(statistics['no_ebfile'])))
