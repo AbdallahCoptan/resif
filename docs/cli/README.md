@@ -14,7 +14,6 @@
 | `info`                     | Display detailed information about a software set                                   |
 | `version`                  | Prints Resif's version information                                                  |
 | `bump:{major,minor,patch}` | Bump the _general_ release of the RESIF deployment (__differs__ from Resif version) |
-| `release`                  | Release a RESIF deployment                                                          |
 
 These commands relies on a set of [internal variables](../variables.md) to perform each action.
 
