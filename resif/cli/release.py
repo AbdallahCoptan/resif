@@ -18,9 +18,9 @@ from resif.cli.build import build
 @click.option('--eb-options', 'eb_options', envvar='RESIF_EB_OPTIONS', help='Any command line options to pass to EasyBuild for the build.')
 @click.option('--enable-try', 'enable_try', flag_value=True, help='Set this flag if you want to try building with similar toolchains if no easyconfig file is found.')
 @click.argument('swset')
-def release(**kwargs):
+@click.pass_context
+def release(ctx, **kwargs):
 
-    kwargs['release'] = True
-    build(**kwargs)
+    ctx.forward(build, release=True)
 
     return
