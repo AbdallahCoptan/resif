@@ -39,7 +39,7 @@ def getInstallDir(configdir, datadir, release=False):
             shortversion = "%s.%s" % (match.group(1), match.group(2))
             search = glob.glob(os.path.join(datadir, "production", "v%s-*" % (shortversion)))
             if search:
-                return search
+                return search[0]
             else:
                 installdir = os.path.join(datadir, "production", "v%s-%s" % (shortversion, datetime.datetime.now().strftime("%Y%m%d")))
                 os.mkdir(installdir)
