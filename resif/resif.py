@@ -10,6 +10,7 @@ import pkg_resources
 
 from .cli.init import init
 from .cli.build import build
+from .cli.release import release
 
 
 #######################################################################################################################
@@ -34,3 +35,4 @@ def resif(ctx, version):
 # Add the different CLI commands
 resif.add_command(init)
 resif.add_command(build)
+resif.add_command(release)
