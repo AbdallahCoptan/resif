@@ -9,6 +9,8 @@ import grp
 import subprocess
 import time
 import re
+import datetime
+import glob
 
 import click
 
@@ -26,9 +28,32 @@ def chgrp(path, groupname):
             os.chown(os.path.join(root, f), -1, gid)
 
 # Determine correct install directory
-def getInstallDir(configdir, datadir):
-    # just a dummy for now that always returns the devel directory
-    return os.path.join(datadir, "devel")
+def getInstallDir(configdir, datadir, release=False):
+    if release:
+        filename = os.path.join(configdir, "VERSION")
+        v = open(filename, 'r')
+        version = v.readline()
+        v.close()
+        match = re.match("^([0-9]+)\.([0-9]+)\.([0-9]+)$", version)
+        if match:
+            shortversion = "%s.%s" % (match.group(1), match.group(2))
+            search = glob.glob(os.path.join(datadir, "production", "v%s-*" % (shortversion)))
+            if search:
+                return search
+            else:
+                installdir = os.path.join(datadir, "production", "v%s-%s" % (shortversion, datetime.datetime.now().strftime("%Y%m%d")))
+                os.mkdir(installdir)
+                os.symlink(installdir, os.path.join(datadir, "production", "v%s" % (shortversion)))
+                last = os.path.join(datadir, "production", "last")
+                if os.path.islink(last):
+                    os.remove(last)
+                os.symlink(installdir, last)
+                return installdir
+        else:
+            click.echo("Invalid version string found in %s." % (filename), err=True)
+            exit(50)
+    else:
+        return os.path.join(datadir, "devel")
 
 # Check if a command exists in the current environment
 def cmd_exists(cmd):
@@ -82,9 +107,12 @@ def buildSwSets(params):
         options += ' --module-naming-scheme=' + roledata['mns']
 
         click.echo("Building '%s'..." % (swset))
-        
-        if not ('installdir' in params and params['installdir']):
-            params['installdir'] = getInstallDir(params['configdir'], roledata['datadir'])
+
+        if 'release' in params and params['release']:
+            params['installdir'] = getInstallDir(params['configdir'], roledata['datadir'], params['release'])
+        else:
+            if not ('installdir' in params and params['installdir']):
+                params['installdir'] = getInstallDir(params['configdir'], roledata['datadir'])
         
         installpath =  os.path.join(params['installdir'], swset)
 
