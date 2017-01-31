@@ -6,6 +6,7 @@
 
 import os
 import yaml
+import click
 
 from git import Repo
 
@@ -96,3 +97,23 @@ def pullall(configdir, datadir, resifile=None):
 
     # Return the lists of paths separated by :
     return (":".join(map(lambda x: x[1], eblockspathslist)), ":".join(map(lambda x: x[1], econfigspathslist)))
+
+def list(configdir):
+    for f in os.listdir(os.path.join(configdir, "sources")):
+        click.echo(os.path.splitext(f)[0])
+
+def remove(name, configdir):
+    filename = os.path.join(configdir, "sources", "%s.yaml" % (name))
+    if os.path.isfile(filename):
+        os.remove(filename)
+    else:
+        click.echo("Could not find source \"%s\" in %s." % (name,configdir), err=True)
+
+def info(name, configdir):
+    filename = os.path.join(configdir, "sources", "%s.yaml" % (name))
+    if os.path.isfile(filename):
+        f = open(filename, 'r')
+        click.echo(f.read())
+        f.close()
+    else:
+        click.echo("Could not find source \"%s\" in %s." % (name, configdir), err=True)
