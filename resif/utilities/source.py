@@ -98,9 +98,11 @@ def pullall(configdir, datadir, resifile=None):
     # Return the lists of paths separated by :
     return (":".join(map(lambda x: x[1], eblockspathslist)), ":".join(map(lambda x: x[1], econfigspathslist)))
 
+
 def list(configdir):
     for f in os.listdir(os.path.join(configdir, "sources")):
         click.echo(os.path.splitext(f)[0])
+
 
 def remove(name, configdir):
     filename = os.path.join(configdir, "sources", "%s.yaml" % (name))
@@ -108,6 +110,7 @@ def remove(name, configdir):
         os.remove(filename)
     else:
         click.echo("Could not find source \"%s\" in %s." % (name,configdir), err=True)
+
 
 def info(name, configdir):
     filename = os.path.join(configdir, "sources", "%s.yaml" % (name))
@@ -117,3 +120,37 @@ def info(name, configdir):
         f.close()
     else:
         click.echo("Could not find source \"%s\" in %s." % (name, configdir), err=True)
+
+
+def __collectSourceInfo():
+    data = {}
+    typ = click.prompt("Specify the source type (local|git)", type=click.Choice(['local', 'git']), default="git")
+    if typ == "local":
+        data['path'] = click.prompt("Specify a local path")
+        while not os.path.isdir(os.path.abspath(os.path.expandvars(data['path']))):
+            click.echo("Invalid path!", err=True)
+            data['path'] = click.prompt("Specify a local path")
+    elif typ == "git":
+        data['git'] = click.prompt("Specify the git URL")
+        if click.confirm("Do you want to specify a specific branch, tag, ref or commit?"):
+            spec = click.prompt("What do you want to specify (branch|tag|ref|commit)?", type=click.Choice(['branch', 'ref', 'tag', 'commit']))
+            data[spec] = click.prompt("Specify the value")
+    return data
+
+
+def add(name, configdir):
+    filename = os.path.join(configdir, "sources", "%s.yaml" % (name))
+    if os.path.isfile(filename):
+        click.echo("Source already exists.", err=True)
+        exit(50)
+    else:
+        data = {}
+        data['priority'] = click.prompt('Specify a priority', default=100)
+        if click.confirm("Do you want to add an easyconfig source?"):
+            data['easyconfigs'] = __collectSourceInfo()
+        if click.confirm("Do you want to add an easyblocks source?"):
+            data['easyblocks'] = __collectSourceInfo()
+
+        f = open(filename, 'w')
+        yaml.dump(data, f, default_flow_style=False)
+        f.close()
