@@ -150,7 +150,11 @@ def add(name, configdir):
             data['easyconfigs'] = __collectSourceInfo()
         if click.confirm("Do you want to add an easyblocks source?"):
             data['easyblocks'] = __collectSourceInfo()
-
-        f = open(filename, 'w')
-        yaml.dump(data, f, default_flow_style=False)
-        f.close()
+        if not 'easyconfigs' in data and not 'easyblocks' in data:
+            click.echo("You need to specify an easyconfigs or easyblocks source.", err=True)
+            raise click.Abort
+        else:
+            f = open(filename, 'w')
+            yaml.safe_dump(data, f, default_flow_style=False)
+            f.close()
+            click.echo("Source successfully created.")

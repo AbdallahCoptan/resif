@@ -20,25 +20,25 @@ def sources(ctx, configdir):
         ctx.obj = {'configdir': configdir}
     return
 
-@sources.command()
+@sources.command(short_help='Add a new source.')
 @click.argument('sourcename')
 @click.pass_context
 def add(ctx, sourcename):
-    return
+    source.add(sourcename, ctx.obj['configdir'])
 
-@sources.command()
+@sources.command(short_help='List all sources.')
 @click.pass_context
 def list(ctx):
     source.list(ctx.obj['configdir'])
 
-@sources.command()
+@sources.command(short_help='Remove a source.')
 @click.confirmation_option(prompt='Are you sure you want to delete the source definition?')
 @click.argument('sourcename')
 @click.pass_context
 def rm(ctx, sourcename):
     source.remove(sourcename, ctx.obj['configdir'])
 
-@sources.command()
+@sources.command(short_help='Print details about a source.')
 @click.argument('sourcename')
 @click.pass_context
 def info(ctx, sourcename):
