@@ -9,6 +9,7 @@ import yaml
 import glob
 import re
 import click
+import source
 
 # Get the list of software sets in a resifile
 def getSoftwareSets (resifile):
@@ -133,3 +134,38 @@ def info(resifile):
     f.close()
 
     return
+
+
+def add(name, configdir):
+    data = {}
+
+    if click.confirm("Do you want to specify sources specific for this software set?"):
+        data['sources'] = {}
+        sourcename = click.prompt("Please give a name for the source")
+        data['sources'][sourcename] = source.__collectInfo()
+
+        while click.confirm("Do you want to specifiy another source?"):
+            sourcename = click.prompt("Please give a name for the source")
+            data['sources'][sourcename] = source.__collectInfo()
+
+    if click.confirm("Do you want to specify toolchains?"):
+        data['toolchains'] = []
+        click.echo("Please enter the toolchains one per line in the format <name>/<version>, and finish with an empty line.")
+        tc = raw_input()
+        while tc:
+            data['toolchains'].append(tc)
+            tc = raw_input()
+
+    data[name] = []
+    click.echo("Please enter the softwares one per line in the format <name>-<version>-<toolchain>.eb or <name>/<version> if you have defined toolchains, and finish with an empty line.")
+    sw = raw_input()
+    while sw:
+        data[name].append(sw)
+        sw = raw_input()
+
+    filename = os.path.join(configdir, "swsets", "%s.yaml" % (name))
+    f = open(filename, 'w')
+    yaml.safe_dump(data, f, default_flow_style=False)
+    f.close()
+    click.echo("Software set successfully created.")
+

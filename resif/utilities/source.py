@@ -137,6 +137,19 @@ def __collectSourceInfo():
             data[spec] = click.prompt("Specify the value")
     return data
 
+def __collectInfo():
+    data = {}
+
+    data['priority'] = click.prompt('Specify a priority', default=100)
+    if click.confirm("Do you want to add an easyconfig source?"):
+        data['easyconfigs'] = __collectSourceInfo()
+    if click.confirm("Do you want to add an easyblocks source?"):
+        data['easyblocks'] = __collectSourceInfo()
+    if not 'easyconfigs' in data and not 'easyblocks' in data:
+        click.echo("You need to specify an easyconfigs or easyblocks source.", err=True)
+        raise click.Abort
+
+    return data
 
 def add(name, configdir):
     filename = os.path.join(configdir, "sources", "%s.yaml" % (name))
@@ -144,16 +157,8 @@ def add(name, configdir):
         click.echo("Source already exists.", err=True)
         exit(50)
     else:
-        data = {}
-        data['priority'] = click.prompt('Specify a priority', default=100)
-        if click.confirm("Do you want to add an easyconfig source?"):
-            data['easyconfigs'] = __collectSourceInfo()
-        if click.confirm("Do you want to add an easyblocks source?"):
-            data['easyblocks'] = __collectSourceInfo()
-        if not 'easyconfigs' in data and not 'easyblocks' in data:
-            click.echo("You need to specify an easyconfigs or easyblocks source.", err=True)
-            raise click.Abort
-        else:
+        data = __collectInfo()
+        if data:
             f = open(filename, 'w')
             yaml.safe_dump(data, f, default_flow_style=False)
             f.close()
