@@ -9,7 +9,7 @@ import os
 from resif.utilities import source
 
 @click.group(short_help='Show or modify available sources.')
-@click.option('--configdir', 'configdir', envvar='RESIF_CONFIGDIR', default='$HOME/.config/resif', help='Defines an alternative path to put the configuration in.')
+@click.option('--configdir', 'configdir', envvar='RESIF_CONFIGDIR', default='$HOME/.config/resif', help='Defines an alternative path to load the configuration from..')
 @click.pass_context
 def sources(ctx, configdir):
     configdir = os.path.abspath(os.path.expandvars(configdir))
