@@ -13,6 +13,7 @@ from .cli.build import build
 from .cli.release import release
 from .cli.sources import sources
 from .cli.bump import bump
+from .cli.version import version
 
 
 #######################################################################################################################
@@ -40,3 +41,4 @@ resif.add_command(build)
 resif.add_command(release)
 resif.add_command(sources)
 resif.add_command(bump)
+resif.add_command(version)
