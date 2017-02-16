@@ -11,6 +11,7 @@ import pkg_resources
 from .cli.init import init
 from .cli.build import build
 from .cli.release import release
+from .cli.sources import sources
 
 
 #######################################################################################################################
@@ -36,3 +37,4 @@ def resif(ctx, version):
 resif.add_command(init)
 resif.add_command(build)
 resif.add_command(release)
+resif.add_command(sources)
