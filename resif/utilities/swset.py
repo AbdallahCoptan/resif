@@ -8,6 +8,7 @@ import os
 import yaml
 import glob
 import re
+import click
 
 # Get the list of software sets in a resifile
 def getSoftwareSets (resifile):
@@ -116,3 +117,10 @@ def getSoftwares(resifile, swsetname, ebpaths):
 
     return swsethash
 
+
+def listSoftwareSets(configdir):
+    for f in os.listdir(os.path.join(configdir, "swsets")):
+        name, ext = os.path.splitext(f)
+        if ext == ".yaml":
+            click.echo("%s" % name)
+    return
