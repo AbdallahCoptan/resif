@@ -1,7 +1,7 @@
 #######################################################################################################################
 # Author: Sarah Diehl
 # Mail: hpc-sysadmins@uni.lu
-# Overview: Release a new version of the defined software sets
+# Overview: Bump the general release of the RESIF deployment (differs from Resif version).
 #######################################################################################################################
 
 import click
