@@ -124,3 +124,12 @@ def listSoftwareSets(configdir):
         if ext == ".yaml":
             click.echo("%s" % name)
     return
+
+
+def info(resifile):
+
+    f = open(resifile, 'r')
+    click.echo(f.read())
+    f.close()
+
+    return

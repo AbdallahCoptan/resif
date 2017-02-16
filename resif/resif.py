@@ -15,6 +15,7 @@ from .cli.sources import sources
 from .cli.bump import bump
 from .cli.version import version
 from .cli.list import list
+from .cli.info import info
 
 
 #######################################################################################################################
@@ -44,3 +45,4 @@ resif.add_command(sources)
 resif.add_command(bump)
 resif.add_command(version)
 resif.add_command(list)
+resif.add_command(info)
