@@ -32,7 +32,8 @@ def checkEasyConfig (ebfile, ebpaths):
     swname = ebfile.split("-")[0]
 
     for path in ebpaths:
-        if ebfile in os.listdir(os.path.join(path, swname[0].lower(), swname)):
+	p = os.path.join(path, swname[0].lower(), swname)
+        if os.path.isdir(p) and ebfile in os.listdir(p):
             found = True
     return found
 
