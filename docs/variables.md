@@ -35,8 +35,10 @@ Thus configuring RESIF can be done:
 
 The order of preference for the different configuration types is as listed above, that is:
 
-1. environment variables override the corresponding entries in the role configuration file
-2. command line arguments in turn override the corresponding environment variables and matching entries in the role configuration file
+1. EasyBuild default values (if applicable)
+2. values in the role configuration file
+3. environment variables override the corresponding entries in the role configuration file
+4. command line arguments in turn override the corresponding environment variables and matching entries in the role configuration file
 
 In addition, as RESIF interacts with [Easybuild](https://hpcugent.github.io/easybuild), it sets several variables (prefixed with `eb_`) of interest for Easybuild that are listed below
 
