@@ -12,12 +12,12 @@ The format is depicted [__in `sample/swsets-format.yaml`__](sample/swsets-format
 
 ## Global settings
 
-The following settings can be used to control how the Resiffile installs and handles software.
+The following settings can be used to control how the RESIFile installs and handles software.
 
 ### sources (optional)
 
-See [`ebsources.md`](ebsources.md) -- you might want to precise here a custom source for [Easybuild](https://hpcugent.github.io/easybuild) recipes (_i.e._ easyconfigs and easyblocks) that you **haven't** configured in `<configdir>/sources/<shortname>.yaml` (for instance if you wnat to use this source only once for the considered software set).
-So you can do that under the
+See [`ebsources.md`](ebsources.md) -- you might want to precise here a custom source for [Easybuild](https://hpcugent.github.io/easybuild) recipes (_i.e._ easyconfigs and easyblocks) that you **haven't** configured in `<configdir>/sources/<shortname>.yaml` (for instance if you want to use this source only once for the considered software set).
+So you can do that under the **FIXME**
 
 You might wish to configure for some of the software you wish to install your custom source under `sources["mysourceshortname"]`, _i.e._ as follows (see also `sample/swsets.yaml`):
 
