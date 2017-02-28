@@ -181,7 +181,7 @@ def buildSwSets(params):
                     if re.search("\(module found\)", output) != None:
                         click.echo(software + " was already installed. Nothing to be done.")
                         statistics['already_installed'].append(software)
-                    else:
+                    elif not params['dry_run']:
                         click.echo('Successfully installed ' + software)
                         statistics['success'].append(software)
                 except subprocess.CalledProcessError as e:
@@ -208,7 +208,8 @@ def buildSwSets(params):
             click.echo("Changing permissions of installation directory. This might take a few minutes.")
             chgrp(installpath, roledata['group'])
 
-        click.echo("Software set '" + swset + "' successfully installed. Build duration: " + swsetDurationStr)
+        if not params['dry_run']:
+            click.echo("Software set '" + swset + "' successfully installed. Build duration: " + swsetDurationStr)
 
     click.echo("\n=== SUMMARY STATISTICS ===")
     click.echo("Successfully installed: %s" % (len(statistics['success'])))
@@ -284,7 +285,15 @@ def build(**kwargs):
             click.echo("Software set %s cannot be found in configdir %s." % (kwargs['swset'], kwargs['configdir']), err=True)
             exit(50)
 
-    click.echo("Building the software sets...")
+    if kwargs['eb_options'] and re.search("(^|\s)--dry-run(\s|$)|(^|\s)--dry-run-short(\s|$)|(^|\s)-D(\s|$)", kwargs['eb_options']):
+        kwargs['dry_run'] = True
+    else:
+        kwargs['dry_run'] = False
+
+    if kwargs['dry_run']:
+        click.echo("Doing a dry run of the software sets...")
+    else:
+        click.echo("Building the software sets...")
     start = time.time()
 
     buildSwSets(kwargs)
@@ -295,6 +304,9 @@ def build(**kwargs):
     m, s = divmod(duration, 60)
     h, m = divmod(m, 60)
     durationFormated = "%dh %dm %ds" % (h, m, s)
-    click.echo("\nAll software sets successfully installed. Build duration: " + durationFormated)
+    if kwargs['dry_run']:
+        click.echo("\nFinished dry run in %s." % (durationFormated))
+    else:
+        click.echo("\nAll software sets successfully installed. Build duration: " + durationFormated)
 
     return
