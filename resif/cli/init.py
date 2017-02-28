@@ -20,6 +20,7 @@ import click
 from git import Repo
 
 from resif.utilities import source
+from resif.cli.build import cmd_exists
 
 # Initialize the configuration directory
 def initializeConfig(params):
@@ -155,6 +156,11 @@ def init(**kwargs):
     if kwargs['init_version'] and not re.match("^[0-9]+\.[0-9]+\.[0-9]+$", kwargs['init_version']):
         click.echo("Invalid initial version %s. The format must be <major>.<minor>.<patch>." % (kwargs['init_version']), err=True)
         exit(50)
+
+    # Check which module tool is present on the system
+    if not cmd_exists("lmod") and not cmd_exists("modulecmd"):
+        click.echo("Neither modulecmd nor lmod has been found in your path. Please install either one of them to continue (preferably choose lmod for more functionalities).", err=True)
+        raise click.Abort
 
     # Initialize configuration directory
     initializeConfig(kwargs)
