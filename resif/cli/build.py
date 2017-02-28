@@ -106,7 +106,10 @@ def buildSwSets(params):
             options += ' --robot'
         options += ' --module-naming-scheme=' + roledata['mns']
 
-        click.echo("Building '%s'..." % (swset))
+        if params['dry_run']:
+            click.echo("Dry run of software set '%s'..." % (swset))
+        else:
+            click.echo("Building software set '%s'..." % (swset))
 
         if 'release' in params and params['release']:
             params['installdir'] = getInstallDir(params['configdir'], roledata['datadir'], params['release'])
@@ -166,7 +169,10 @@ def buildSwSets(params):
 
         # For each software
         for software, swinfohash in softwares.items():
-            click.echo("Now starting to install " + software)
+            if params['dry_run']:
+                click.echo("Now starting dry run of " + software)
+            else:
+                click.echo("Now starting to install " + software)
 
             if swinfohash['ebfile'] and (('try' not in swinfohash) or params['enable_try']):
                 if 'try' in swinfohash and swinfohash['try']:
@@ -291,7 +297,7 @@ def build(**kwargs):
         kwargs['dry_run'] = False
 
     if kwargs['dry_run']:
-        click.echo("Doing a dry run of the build...")
+        click.echo("Doing a dry run...")
     else:
         click.echo("Building the software sets...")
     start = time.time()
