@@ -291,7 +291,7 @@ def build(**kwargs):
         kwargs['dry_run'] = False
 
     if kwargs['dry_run']:
-        click.echo("Doing a dry run of the software sets...")
+        click.echo("Doing a dry run of the build...")
     else:
         click.echo("Building the software sets...")
     start = time.time()
