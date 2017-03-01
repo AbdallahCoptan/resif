@@ -61,6 +61,7 @@ def cmd_exists(cmd):
 
 def execRToutput(cmd):
     output = []
+    cmd = "export PYTHONUNBUFFERED=1; %s" % cmd
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, executable="/bin/bash")
     while True:
         line = process.stdout.readline()
