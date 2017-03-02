@@ -59,6 +59,20 @@ def getInstallDir(configdir, datadir, release=False):
 def cmd_exists(cmd):
     return subprocess.call("type " + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
 
+def execRToutput(cmd):
+    output = []
+    cmd = "export PYTHONUNBUFFERED=1; %s" % cmd
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, executable="/bin/bash")
+    while True:
+        line = process.stdout.readline()
+        if line == '' and process.poll() is not None:
+            break
+        if line:
+            output.append(line)
+            click.echo(line.strip())
+    rc = process.poll()
+    return ''.join(output), rc
+
 # Build a list of software with EasyBuild
 def buildSwSets(params):
 
@@ -181,24 +195,22 @@ def buildSwSets(params):
                     command = "%s eb %s --installpath=%s %s\n" % (precommands, options, installpath, swinfohash['ebfile'])
 
                 # Call EasyBuild with all options to install software
-                try:
-                    output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True, executable="/bin/bash")
-                    click.echo(output)
+                output, returncode = execRToutput(command)
+                if not returncode:
                     if re.search("\(module found\)", output) != None:
                         click.echo(software + " was already installed. Nothing to be done.")
                         statistics['already_installed'].append(software)
                     elif not params['dry_run']:
                         click.echo('Successfully installed ' + software)
                         statistics['success'].append(software)
-                except subprocess.CalledProcessError as e:
-                    click.echo(e.output)
-                    match = re.search("Results of the build can be found in the log file\(s\) (.*)", e.output)
+                else:
+                    match = re.search("Results of the build can be found in the log file\(s\) (.*)", output)
                     if match:
-                      logfile = match.group(1)
-                      statistics['failed'].append("%s (log: %s)" % (software,logfile))
+                        logfile = match.group(1)
+                        statistics['failed'].append("%s (log: %s)" % (software, logfile))
                     else:
                         statistics['failed'].append(software)
-                    click.echo('Failed to install %s.\nOperation failed with return code %s.' % (software, e.returncode), err=True)
+                    click.echo('Failed to install %s.\nOperation failed with return code %s.' % (software, returncode), err=True)
             else:
                 click.echo("Failed to install %s.\nNo easyconfig file found." % (software), err=True)
                 statistics['no_ebfile'].append(software)
