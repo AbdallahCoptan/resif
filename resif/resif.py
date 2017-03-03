@@ -7,6 +7,8 @@
 import click
 import subprocess
 import pkg_resources
+import fcntl
+import os
 
 from .cli.init import init
 from .cli.build import build
@@ -30,11 +32,21 @@ def resif(ctx, version):
 
     Choose the sub-command you want to execute.
     """
+
+    pid_file = os.path.join(os.path.expanduser("~"),'resif.lock')
+    fp = open(pid_file, 'w')
+    try:
+        fcntl.lockf(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except IOError:
+        # another instance is running
+        exit("Another instance of RESIF is already running. Only one instance is allowed to run at a time.")
+
     if ctx.invoked_subcommand is None:
         if version:
             click.echo("This is RESIF version " + pkg_resources.require("resif")[0].version)
         else:
             subprocess.check_call(['resif', '--help'])
+
 
 #######################################################################################################################
 
