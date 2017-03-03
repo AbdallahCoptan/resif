@@ -19,13 +19,16 @@ from resif.utilities import role
 from resif.utilities.swset import getSoftwareSets, getSoftwares
 
 def chgrp(path, groupname):
-    gid = grp.getgrnam(groupname).gr_gid
-    os.chown(path, -1, gid)
-    for root, dirs, files in os.walk(path):
-        for d in dirs:
-            os.chown(os.path.join(root, d), -1, gid)
-        for f in files:
-            os.chown(os.path.join(root, f), -1, gid)
+    try:
+        gid = grp.getgrnam(groupname).gr_gid
+        os.chown(path, -1, gid)
+        for root, dirs, files in os.walk(path):
+            for d in dirs:
+                os.chown(os.path.join(root, d), -1, gid)
+            for f in files:
+                os.chown(os.path.join(root, f), -1, gid)
+    except KeyError:
+        click.echo("Failed to change permissions on installation directory. Unknown group '%s', please check that this group exists on the system!" % groupname, err=True)
 
 # Determine correct install directory
 def getInstallDir(configdir, datadir, release=False):
