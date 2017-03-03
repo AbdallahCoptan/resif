@@ -5,8 +5,10 @@
 #######################################################################################################################
 
 import click
-import subprocess
 import pkg_resources
+import os
+import fcntl
+import errno
 
 from .cli.init import init
 from .cli.build import build
@@ -18,6 +20,17 @@ from .cli.list import list
 from .cli.info import info
 from .cli.new import new
 
+lock_file = os.path.join(os.path.expanduser("~"), 'resif.lock')
+fp = open(lock_file, 'w')
+try:
+    fcntl.lockf(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except (IOError, OSError) as e:
+    if e.errno != errno.EAGAIN and e.errno != errno.EACCES:
+        click.echo("Could not obtain lock on %s." % lock_file, err=True)
+        raise
+    else:
+        # another instance is running
+        exit("Another instance of RESIF is already runing. Exiting.")
 
 #######################################################################################################################
 # The resif group. Defines the name of the command. It is the "main" group.
@@ -35,8 +48,7 @@ def resif(ctx, version):
         if version:
             click.echo("This is RESIF version " + pkg_resources.require("resif")[0].version)
         else:
-            subprocess.check_call(['resif', '--help'])
-
+            click.echo(ctx.get_help())
 
 #######################################################################################################################
 
