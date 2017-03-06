@@ -262,7 +262,7 @@ def buildSwSets(params):
             click.echo("\nList of softwares without .eb file:")
             for software in statistics['no_ebfile']:
                 click.echo("- %s" % (software))
-    
+
         if statistics['failed']:
             click.echo("\nList of failed softwares:")
             for software in statistics['failed']:

@@ -32,7 +32,7 @@ def checkEasyConfig (ebfile, ebpaths):
     swname = ebfile.split("-")[0]
 
     for path in ebpaths:
-	p = os.path.join(path, swname[0].lower(), swname)
+        p = os.path.join(path, swname[0].lower(), swname)
         if os.path.isdir(p) and ebfile in os.listdir(p):
             found = True
     return found
@@ -51,13 +51,17 @@ def findSimilarEasyConfig (ebfile, ebpaths):
     match = re.match("^20[0-9]{2}", toolchainversion)
 
     # search in all easyconfig directories for similar files
+    # also make sure that an easyconfig file for the original toolchain is present
     alternatives = []
+    tceasyconfigs = []
     if match:
         search = "%s-%s-%s-%s*.eb" % (swname, swversion, toolchain, match.group(0))
+        searchtc = "%s-%s.eb" % (toolchain, toolchainversion)
         for path in ebpaths:
             alternatives += glob.glob(os.path.join(path, swname[0].lower(), swname, search))
+            tceasyconfigs += glob.glob(os.path.join(path, toolchain[0].lower(), toolchain, searchtc))
 
-    if alternatives:
+    if alternatives and tceasyconfigs:
         # just use the filename, also enables proper sorting
         alternatives = map(os.path.basename, alternatives)
         alternatives.sort(reverse=True)
