@@ -29,7 +29,7 @@ def chgrp(path, groupname):
             for f in files:
                 os.chown(os.path.join(root, f), -1, gid)
     except KeyError:
-        click.echo("\033[93mFailed to change permissions of installation directory. Unknown group '%s', please check that this group exists on the system!\033[0m\n" % groupname, err=True)
+        click.secho("Failed to change permissions of installation directory. Unknown group '%s', please check that this group exists on the system!\n" % groupname, err=True, fg='yellow')
 
 # Determine correct install directory
 def getInstallDir(configdir, datadir, release=False):

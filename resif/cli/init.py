@@ -140,7 +140,8 @@ def init(**kwargs):
             shutil.rmtree(kwargs["configdir"], True)
         # Otherwise exit, tell the user why and point to the overwrite option
         else:
-            click.echo("An installation is already present at your configdir: " + kwargs["configdir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.\n" + "\033[93m" + "WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\033[0m\n", err=True)
+            click.echo("An installation is already present at your configdir: " + kwargs["configdir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.", err=True)
+            click.secho("WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\n", err=True, fg='yellow')
             exit(50)
 
     # If the data directory already exists
@@ -150,7 +151,8 @@ def init(**kwargs):
             shutil.rmtree(kwargs["datadir"], True)
         # Otherwise exit, tell the user why and point to the overwrite option
         else:
-            click.echo("An installation is already present at your datadir: " + kwargs["datadir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.\n" + "\033[93m" + "WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\033[0m\n", err=True)
+            click.echo("An installation is already present at your datadir: " + kwargs["datadir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.", err=True)
+            click.secho("WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\n", err=True, fg='yellow')
             exit(50)
 
     if kwargs['init_version'] and not re.match("^[0-9]+\.[0-9]+\.[0-9]+$", kwargs['init_version']):
