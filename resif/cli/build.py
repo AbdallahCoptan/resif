@@ -77,6 +77,15 @@ def execRToutput(cmd):
     rc = process.poll()
     return ''.join(output), rc
 
+# Returns True if we have good eb files for all softwares
+# otherwise returns False
+def checkSoftwares(softwares, enable_try):
+    for software, swinfohash in softwares.items():
+        if (not swinfohash['ebfile']) or ('try' in swinfohash and not enable_try):
+            click.echo("Could not find easyconfig file for '%s'" % software, err=True)
+            return False
+    return True
+
 # Build a list of software with EasyBuild
 def buildSwSets(params):
 
@@ -184,6 +193,10 @@ def buildSwSets(params):
         swsetStart = time.time()
 
         softwares = getSoftwares(params['swset'],swset,econfigspath)
+
+        if not params['ignore_build_failure']:
+            if not checkSoftwares(softwares, params['enable_try']):
+                raise click.Abort
 
         # For each software
         for software, swinfohash in softwares.items():
