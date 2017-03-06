@@ -40,12 +40,19 @@ def checkEasyConfig (ebfile, ebpaths):
 # Look for similar easyconfigs (same toolchain, same year)
 def findSimilarEasyConfig (ebfile, ebpaths):
 
-    try:
-        swname, swversion, toolchain, toolchainversion = ebfile.split("-")
-    except ValueError:
+    minussplit = ebfile[:-3].split('-')
+    if len(minussplit) >= 4:
+        swname = minussplit[0]
+        swversion = minussplit[1]
+        toolchain = minussplit[2]
+        toolchainversion = minussplit[3]
+    else:
         return None
 
-    toolchainversion = toolchainversion[:-3]
+    if len(minussplit) > 4:
+        versionsuffix = "-".join(minussplit[4:])
+    else:
+        versionsuffix = None
 
     # extract the year from the toolchainversion, if it's a year-based version
     match = re.match("^20[0-9]{2}", toolchainversion)
@@ -55,7 +62,10 @@ def findSimilarEasyConfig (ebfile, ebpaths):
     alternatives = []
     tceasyconfigs = []
     if match:
-        search = "%s-%s-%s-%s*.eb" % (swname, swversion, toolchain, match.group(0))
+        if versionsuffix:
+            search = "%s-%s-%s-%s*-%s.eb" % (swname, swversion, toolchain, match.group(0), versionsuffix)
+        else:
+            search = "%s-%s-%s-%s*.eb" % (swname, swversion, toolchain, match.group(0))
         searchtc = "%s-%s.eb" % (toolchain, toolchainversion)
         for path in ebpaths:
             alternatives += glob.glob(os.path.join(path, swname[0].lower(), swname, search))
@@ -81,7 +91,7 @@ def getEasyConfig(ebfile, ebpaths):
     else:
         sim = findSimilarEasyConfig(ebfile, ebpaths)
         if sim:
-            toolchain, toolchainversion = ebfile[:-3].split("-")[2:]
+            toolchain, toolchainversion = ebfile[:-3].split("-")[2:4]
             swhash['ebfile'] = sim
             swhash['try'] = "%s,%s" % (toolchain, toolchainversion)
         # if no similar easyconfig files are found, we cannot build the software
@@ -112,14 +122,31 @@ def getSoftwares(resifile, swsetname, ebpaths):
                 if sw.endswith(".eb"):
                     swsethash[sw[:-3]] = getEasyConfig(sw, ebpathslist)
 
-                # If the list item is in the form of <software>/<version>, we need to expand it with all defined
-                # toolchains
+                # If the list item is in the form of <software>/<version>-<versionsuffix>, we need to expand it with all
+                # defined toolchains
                 else:
-                    name, version = sw.split('/')
-                    for toolchain in data['toolchains']:
-                        tcname, tcversion = toolchain.split("/")
-                        ebfile = "%s-%s-%s-%s.eb" % (name, version, tcname, tcversion)
-                        swsethash[ebfile[:-3]] = getEasyConfig(ebfile, ebpathslist)
+                    slashsplit = sw.split('/')
+                    # make sure we have at least <software>/<version>
+                    if len(slashsplit) == 2:
+                        name = slashsplit[0]
+                        version = slashsplit[1]
+
+                        # check for a versionsuffix
+                        minussplit = version.split('-')
+                        if len(minussplit) >= 2:
+                            version = minussplit[0]
+                            versionsuffix = "-".join(minussplit[1:])
+                            for toolchain in data['toolchains']:
+                                tcname, tcversion = toolchain.split("/")
+                                ebfile = "%s-%s-%s-%s-%s.eb" % (name, version, tcname, tcversion, versionsuffix)
+                                swsethash[ebfile[:-3]] = getEasyConfig(ebfile, ebpathslist)
+                        else:
+                            for toolchain in data['toolchains']:
+                                tcname, tcversion = toolchain.split("/")
+                                ebfile = "%s-%s-%s-%s.eb" % (name, version, tcname, tcversion)
+                                swsethash[ebfile[:-3]] = getEasyConfig(ebfile, ebpathslist)
+                    else:
+                        swsethash[ebfile[:-3]] = None
 
     return swsethash
 
