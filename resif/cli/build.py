@@ -253,18 +253,20 @@ def buildSwSets(params):
     click.echo("\n=== SUMMARY STATISTICS ===")
     click.echo("Successfully installed: %s" % (len(statistics['success'])))
     click.echo("Already installed:      %s" % (len(statistics['already_installed'])))
-    click.echo("No .eb file found:      %s" % (len(statistics['no_ebfile'])))
-    click.echo("Build failed:           %s" % (len(statistics['failed'])))
 
-    if statistics['no_ebfile']:
-        click.echo("\nList of softwares without .eb file:")
-        for software in statistics['no_ebfile']:
-            click.echo("- %s" % (software))
+    if params['ignore_build_failure']:
+        click.echo("No .eb file found:      %s" % (len(statistics['no_ebfile'])))
+        click.echo("Build failed:           %s" % (len(statistics['failed'])))
 
-    if statistics['failed']:
-        click.echo("\nList of failed softwares:")
-        for software in statistics['failed']:
-            click.echo("- %s" % (software))
+        if statistics['no_ebfile']:
+            click.echo("\nList of softwares without .eb file:")
+            for software in statistics['no_ebfile']:
+                click.echo("- %s" % (software))
+    
+        if statistics['failed']:
+            click.echo("\nList of failed softwares:")
+            for software in statistics['failed']:
+                click.echo("- %s" % (software))
 
     return
 
