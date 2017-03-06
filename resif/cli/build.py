@@ -166,10 +166,10 @@ def buildSwSets(params):
 
         # Part for environment-modules
         if params["module_cmd"] == "modulecmd":
-            precommands += 'export MODULEPATH=$MODULEPATH:%s;' % (':'.join([os.path.join(params['installdir'], 'modules', 'all'), ebInstallPath, defaultSwsetPath]))
+            precommands += 'export MODULEPATH=$MODULEPATH:%s;' % (ebInstallPath)
         # Part for Lmod
         elif params["module_cmd"] == "lmod":
-            precommands += "module use %s; module use %s; module use %s;" % (ebInstallPath, defaultSwsetPath, os.path.join(params['installdir'], 'modules', 'all'))
+            precommands += "module use %s;" % (ebInstallPath)
 
         # Load EasyBuild module
         if roledata['mns'] == "CategorizedModuleNamingScheme":
@@ -185,6 +185,7 @@ def buildSwSets(params):
             # only remove it if it wasn't present before
             if ebInstallPath not in oldmodulepath.split(":"):
                 precommands += "module unuse %s; " % (ebInstallPath)
+            precommands += "module use %s; module use %s;" % (defaultSwsetPath, os.path.join(params['installdir'], 'modules', 'all'))
 
         # Add path to easyblocks to PYTHONPATH, so EasyBuild can find them
         if eblockspath:
