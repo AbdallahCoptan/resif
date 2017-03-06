@@ -230,7 +230,7 @@ def buildSwSets(params):
             chgrp(installpath, roledata['group'])
 
         if not params['dry_run']:
-            click.echo("Software set '" + swset + "' successfully installed. Build duration: " + swsetDurationStr)
+            click.echo("Finished build of software set '" + swset + "'. Duration: " + swsetDurationStr)
 
     click.echo("\n=== SUMMARY STATISTICS ===")
     click.echo("Successfully installed: %s" % (len(statistics['success'])))
@@ -328,6 +328,6 @@ def build(**kwargs):
     if kwargs['dry_run']:
         click.echo("\nFinished dry run in %s." % (durationFormated))
     else:
-        click.echo("\nAll software sets successfully installed. Build duration: " + durationFormated)
+        click.echo("\nFinished build of all software sets. Duration: " + durationFormated)
 
     return
