@@ -215,8 +215,12 @@ def buildSwSets(params):
                     else:
                         statistics['failed'].append(software)
                     click.echo('Failed to install %s.\nOperation failed with return code %s.' % (software, returncode), err=True)
+                    if not params['ignore_build_failure']:
+                        exit(returncode)
             else:
                 click.echo("Failed to install %s.\nNo easyconfig file found." % (software), err=True)
+                if not params['ignore_build_failure']:
+                    exit(-1)
                 statistics['no_ebfile'].append(software)
 
         # Compute how long the installation took
@@ -261,6 +265,7 @@ def buildSwSets(params):
 @click.option('--eb-buildpath', 'eb_buildpath', envvar='EASYBUILD_BUILDPATH', help='EasyBuild buildpath.')
 @click.option('--eb-options', 'eb_options', envvar='RESIF_EB_OPTIONS', help='Any command line options to pass to EasyBuild for the build.')
 @click.option('--enable-try', 'enable_try', flag_value=True, help='Set this flag if you want to try building with similar toolchains if no easyconfig file is found.')
+@click.option('--ignore-build-failure', 'ignore_build_failure', flag_value=True, help='Continue even if the build of a software fails.')
 @click.argument('swset')
 def build(**kwargs):
 
