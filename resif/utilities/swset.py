@@ -137,16 +137,25 @@ def getSoftwares(resifile, swsetname, ebpaths):
                             version = minussplit[0]
                             versionsuffix = "-".join(minussplit[1:])
                             for toolchain in data['toolchains']:
-                                tcname, tcversion = toolchain.split("/")
+                                try:
+                                    tcname, tcversion = toolchain.split("/")
+                                except ValueError:
+                                    click.echo("Error: '%s' is not a valid toolchain definition." % toolchain, err=True)
+                                    raise click.Abort
                                 ebfile = "%s-%s-%s-%s-%s.eb" % (name, version, tcname, tcversion, versionsuffix)
                                 swsethash[ebfile[:-3]] = getEasyConfig(ebfile, ebpathslist)
                         else:
                             for toolchain in data['toolchains']:
-                                tcname, tcversion = toolchain.split("/")
+                                try:
+                                    tcname, tcversion = toolchain.split("/")
+                                except ValueError:
+                                    click.echo("Error: '%s' is not a valid toolchain definition." % toolchain, err=True)
+                                    raise click.Abort
                                 ebfile = "%s-%s-%s-%s.eb" % (name, version, tcname, tcversion)
                                 swsethash[ebfile[:-3]] = getEasyConfig(ebfile, ebpathslist)
                     else:
-                        swsethash[ebfile[:-3]] = None
+                        click.echo("Error: '%s' is not a valid software definition." % sw, err=True)
+                        raise click.Abort
 
     return swsethash
 
