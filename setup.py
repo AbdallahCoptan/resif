@@ -90,7 +90,7 @@ setup(
 
     license='GPLv3',
 
-    packages=['resif'],
+    packages=find_packages(),
 
     # Run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's
