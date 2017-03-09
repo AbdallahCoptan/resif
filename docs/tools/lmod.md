@@ -19,8 +19,22 @@ The best is to use [HomeBrew](http://brew.sh)
 
 ~~~bash
 $> brew install lua
-$> luarocks-5.2 install luafilesystem   # Homebrew does not provide special Lua dependencies
-$> source ~/.zshrc        # (Eventually)
+# Homebrew does not provide special Lua dependencies
+$> luarocks-5.2 install luafilesystem   
+$> luarocks-5.2 install luaposi
+~~~
+
+_Note_:  You can also use `--local` option (or the `--tree <path>`) to have the LUA packages installed in `~/.luarocks` (or `<path>`). If you use `--tree <path>`, you need to update the environmental variables [`LUA_PATH` and `LUA_CPATH`](http://leafo.net/guides/customizing-the-luarocks-tree.html) as follows:
+
+~~~bash
+export LUA_PREFIX="$HOME/.local/share/luarocks"
+export LUA_PATH="$LUA_PREFIX/share/lua/5.2/?.lua;$LUA_PATH"
+export LUA_CPATH="$LUA_PREFIX/lib/lua/5.2/?.so;$LUA_CPATH"
+~~~
+
+Now it should be fine to install LMod:
+
+~~~bash
 $> brew install lmod
 ~~~
 
