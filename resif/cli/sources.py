@@ -6,6 +6,7 @@
 
 import click
 import os
+import re
 from resif.utilities import source
 
 @click.group(short_help='Show or modify available sources.')
@@ -24,7 +25,11 @@ def sources(ctx, configdir):
 @click.argument('sourcename')
 @click.pass_context
 def add(ctx, sourcename):
-    source.add(sourcename, ctx.obj['configdir'])
+    if re.match("^\w+$", sourcename):
+        source.add(sourcename, ctx.obj['configdir'])
+    else:
+        click.echo("The sourcename should only contain letters, numbers and '_'.", err=True)
+        raise click.Abort
 
 @sources.command(short_help='List all sources.')
 @click.pass_context
