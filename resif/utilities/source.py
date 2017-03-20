@@ -70,7 +70,10 @@ def pullall(configdir, datadir, resifile=None):
             eblockspathslist.append((source['priority'],eblockspath))
         if "easyconfigs" in source:
             __pull(source["easyconfigs"], econfigspath)
-            econfigspathslist.append((source['priority'], os.path.join(econfigspath, "easybuild", "easyconfigs")))
+            if os.path.isdir(os.path.join(econfigspath, "easybuild", "easyconfigs")):
+                econfigspathslist.append((source['priority'], os.path.join(econfigspath, "easybuild", "easyconfigs")))
+            else:
+                econfigspathslist.append((source['priority'], econfigspath))
 
     if resifile:
         f = open(resifile, 'r')
