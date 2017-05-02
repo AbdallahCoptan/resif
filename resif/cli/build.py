@@ -158,7 +158,7 @@ def buildSwSets(params):
                 precommands += 'export %s=%s;' % (variablename, value)
 
         ebInstallPath = os.path.join(params['eb_prefix'], 'modules', 'all')
-        defaultSwsetPath = os.path.join(params['installdir'], "default")
+        defaultSwsetPath = os.path.join(params['installdir'], "default", "modules", "all")
 
         oldmodulepath = ""
         if 'MODULEPATH' in os.environ and os.environ['MODULEPATH']:
@@ -180,12 +180,12 @@ def buildSwSets(params):
         # remove EB_PREFIX since it's not in our data directory and might contain further modules than just EasyBuild,
         # that could interfer with our installation
         if params["module_cmd"] == "modulecmd":
-            precommands += 'export MODULEPATH=%s;' % (':'.join([oldmodulepath, os.path.join(params['installdir'], 'modules', 'all'), defaultSwsetPath]))
+            precommands += 'export MODULEPATH=%s;' % (':'.join([oldmodulepath, os.path.join(installpath, 'modules', 'all'), defaultSwsetPath]))
         elif params["module_cmd"] == "lmod":
             # only remove it if it wasn't present before
             if ebInstallPath not in oldmodulepath.split(":"):
                 precommands += "module unuse %s; " % (ebInstallPath)
-            precommands += "module use %s; module use %s;" % (defaultSwsetPath, os.path.join(params['installdir'], 'modules', 'all'))
+            precommands += "module use %s; module use %s;" % (defaultSwsetPath, os.path.join(installpath, 'modules', 'all'))
 
         # Add path to easyblocks to PYTHONPATH, so EasyBuild can find them
         if eblockspath:
