@@ -29,7 +29,8 @@ def getSoftwareSets (resifile):
 # Check if an easyconfig file exists
 def checkEasyConfig (ebfile, ebpaths):
     found = False
-    swname = ebfile.split("-")[0]
+    match = re.match("^([^\d]+)-(v?[\d\.-]+)-(\w+)-?([\d\w.]+)?(.*)\.eb", ebfile)
+    swname = match.group(1)
 
     for path in ebpaths:
         p = os.path.join(path, swname[0].lower(), swname)
@@ -40,17 +41,18 @@ def checkEasyConfig (ebfile, ebpaths):
 # Look for similar easyconfigs (same toolchain, same year)
 def findSimilarEasyConfig (ebfile, ebpaths):
 
-    minussplit = ebfile[:-3].split('-')
-    if len(minussplit) >= 4:
-        swname = minussplit[0]
-        swversion = minussplit[1]
-        toolchain = minussplit[2]
-        toolchainversion = minussplit[3]
+    match = re.match("^([^\d]+)-(v?[\d\.-]+)-(\w+)-?([\d\w.]+)?(.*)\.eb", ebfile)
+
+    if match:
+        swname = match.group(1)
+        swversion = match.group(2)
+        toolchain = match.group(3)
+        toolchainversion = match.group(4)
     else:
         return None
 
-    if len(minussplit) > 4:
-        versionsuffix = "-".join(minussplit[4:])
+    if match.group(5):
+        versionsuffix = match.group(5)
     else:
         versionsuffix = None
 
@@ -63,7 +65,7 @@ def findSimilarEasyConfig (ebfile, ebpaths):
     tceasyconfigs = []
     if match:
         if versionsuffix:
-            search = "%s-%s-%s-%s*-%s.eb" % (swname, swversion, toolchain, match.group(0), versionsuffix)
+            search = "%s-%s-%s-%s*%s.eb" % (swname, swversion, toolchain, match.group(0), versionsuffix)
         else:
             search = "%s-%s-%s-%s*.eb" % (swname, swversion, toolchain, match.group(0))
         searchtc = "%s-%s.eb" % (toolchain, toolchainversion)
