@@ -28,15 +28,13 @@ def getSoftwareSets (resifile):
 
 # Check if an easyconfig file exists
 def checkEasyConfig (ebfile, ebpaths):
-    found = False
-    match = re.match("^([\w-]+)-(v?[\d\.-]+)-(\w+)-?([\d\w.]+)?(.*)\.eb", ebfile)
-    swname = match.group(1)
 
     for path in ebpaths:
-        p = os.path.join(path, swname[0].lower(), swname)
-        if os.path.isdir(p) and ebfile in os.listdir(p):
-            found = True
-    return found
+        p = os.path.join(path, ebfile[0].lower())
+        for root, dirs, files in os.walk(p):
+            if ebfile in files:
+                return True
+    return False
 
 # Look for similar easyconfigs (same toolchain, same year)
 def findSimilarEasyConfig (ebfile, ebpaths):
