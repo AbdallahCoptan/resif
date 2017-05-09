@@ -29,7 +29,7 @@ def getSoftwareSets (resifile):
 # Check if an easyconfig file exists
 def checkEasyConfig (ebfile, ebpaths):
     found = False
-    match = re.match("^([^\d]+)-(v?[\d\.-]+)-(\w+)-?([\d\w.]+)?(.*)\.eb", ebfile)
+    match = re.match("^([\w-]+)-(v?[\d\.-]+)-(\w+)-?([\d\w.]+)?(.*)\.eb", ebfile)
     swname = match.group(1)
 
     for path in ebpaths:
@@ -41,7 +41,7 @@ def checkEasyConfig (ebfile, ebpaths):
 # Look for similar easyconfigs (same toolchain, same year)
 def findSimilarEasyConfig (ebfile, ebpaths):
 
-    match = re.match("^([^\d]+)-(v?[\d\.-]+)-(\w+)-?([\d\w.]+)?(.*)\.eb", ebfile)
+    match = re.match("^([\w-]+)-(v?[\d\.-]+)-(\w+)-?([\d\w.]+)?(.*)\.eb", ebfile)
 
     if match:
         swname = match.group(1)
