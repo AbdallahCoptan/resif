@@ -224,9 +224,9 @@ def buildSwSets(params):
                         click.echo('Successfully installed ' + software)
                         statistics['success'].append(software)
                 else:
-                    match = re.search("Results of the build can be found in the log file\(s\) (.*)", output)
+                    match = re.findall("Results of the build can be found in the log file\(s\) (.*)", output)
                     if match:
-                        logfile = match.group(1)
+                        logfile = match[-1]
                         statistics['failed'].append("%s (log: %s)" % (software, logfile))
                     else:
                         statistics['failed'].append(software)
