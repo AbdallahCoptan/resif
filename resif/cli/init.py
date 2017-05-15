@@ -126,6 +126,7 @@ def bootstrapEB(prefix, mns, module_tool):
 @click.option('--mns', 'mns', envvar='EASYBUILD_MODULE_NAMING_SCHEME', type=click.Choice(['EasyBuildMNS', 'HierarchicalMNS', 'CategorizedModuleNamingScheme', 'CategorizedHMNS']), default='CategorizedModuleNamingScheme', help='Module Naming Scheme to be used.')
 @click.option('--overwrite', 'overwrite', flag_value=True, envvar='RESIF_OVERWRITE', help='Set this flag if you want to overwrite any existing directories in the CONFIGDIR and DATADIR.')
 @click.option('--init-version', 'init_version', default="0.0.1", help='Set the initial version for the software deployment.')
+@click.option('--init', 'init', default=['all'], type=click.Choice(['all', 'data', 'config', 'eb']), multiple=True, help="Specify what should be initialised; can be specified multiple times.")
 def init(**kwargs):
 
     # Make sure all paths are absolute and with variables expanded
@@ -133,43 +134,49 @@ def init(**kwargs):
     kwargs['datadir'] = os.path.abspath(os.path.expandvars(kwargs['datadir']))
     kwargs['eb_prefix'] = os.path.abspath(os.path.expandvars(kwargs['eb_prefix']))
 
-    # If the configuration directory already exists
-    if os.path.isdir(kwargs["configdir"]):
-        # If overwrite was specified, delete the full configuration directory
-        if kwargs["overwrite"]:
-            shutil.rmtree(kwargs["configdir"], True)
-        # Otherwise exit, tell the user why and point to the overwrite option
-        else:
-            click.echo("An installation is already present at your configdir: " + kwargs["configdir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.", err=True)
-            click.secho("WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\n", err=True, fg='yellow')
-            exit(50)
+    if 'config' in kwargs['init'] or 'all' in kwargs['init']:
+        # If the configuration directory already exists
+        if os.path.isdir(kwargs["configdir"]):
+            # If overwrite was specified, delete the full configuration directory
+            if kwargs["overwrite"]:
+                shutil.rmtree(kwargs["configdir"], True)
+            # Otherwise exit, tell the user why and point to the overwrite option
+            else:
+                click.echo("An installation is already present at your configdir: " + kwargs["configdir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.", err=True)
+                click.secho("WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + " (depending on the init options).\n", err=True, fg='yellow')
+                exit(50)
 
-    # If the data directory already exists
-    if os.path.isdir(kwargs["datadir"]):
-        # If overwrite was specified, delete the full data directory
-        if kwargs["overwrite"]:
-            shutil.rmtree(kwargs["datadir"], True)
-        # Otherwise exit, tell the user why and point to the overwrite option
-        else:
-            click.echo("An installation is already present at your datadir: " + kwargs["datadir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.", err=True)
-            click.secho("WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + "\n", err=True, fg='yellow')
-            exit(50)
+    if 'data' in kwargs['init'] or 'all' in kwargs['init']:
+        # If the data directory already exists
+        if os.path.isdir(kwargs["datadir"]):
+            # If overwrite was specified, delete the full data directory
+            if kwargs["overwrite"]:
+                shutil.rmtree(kwargs["datadir"], True)
+            # Otherwise exit, tell the user why and point to the overwrite option
+            else:
+                click.echo("An installation is already present at your datadir: " + kwargs["datadir"] + "\nPlease use the --overwrite flag if you want to overwrite this installation.", err=True)
+                click.secho("WARNING: This will remove everything at " + kwargs["configdir"] + " and " + kwargs["datadir"] + " (depending on the init options).\n", err=True, fg='yellow')
+                exit(50)
 
     if kwargs['init_version'] and not re.match("^[0-9]+\.[0-9]+\.[0-9]+$", kwargs['init_version']):
         click.echo("Invalid initial version %s. The format must be <major>.<minor>.<patch>." % (kwargs['init_version']), err=True)
         exit(50)
 
-    # Check which module tool is present on the system
-    if not cmd_exists("lmod") and not cmd_exists("modulecmd"):
-        click.echo("Neither modulecmd nor lmod has been found in your path. Please install either one of them to continue (preferably choose lmod for more functionalities).", err=True)
-        raise click.Abort
+    if 'eb' in kwargs['init'] or 'all' in kwargs['init']:
+        # Check which module tool is present on the system
+        if not cmd_exists("lmod") and not cmd_exists("modulecmd"):
+            click.echo("Neither modulecmd nor lmod has been found in your path. Please install either one of them to continue (preferably choose lmod for more functionalities).", err=True)
+            raise click.Abort
 
-    # Initialize configuration directory
-    initializeConfig(kwargs)
-    # Initialize data directory and pull default easyconfigs and easyblocks repositories
-    initializeDatadir(kwargs)
-    # Install EasyBuild in <eb_prefix> directory
-    bootstrapEB(kwargs["eb_prefix"], kwargs["mns"], kwargs["eb_module_tool"])
+    if 'config' in kwargs['init'] or 'all' in kwargs['init']:
+        # Initialize configuration directory
+        initializeConfig(kwargs)
+    if 'data' in kwargs['init'] or 'all' in kwargs['init']:
+        # Initialize data directory and pull default easyconfigs and easyblocks repositories
+        initializeDatadir(kwargs)
+    if 'eb' in kwargs['init'] or 'all' in kwargs['init']:
+        # Install EasyBuild in <eb_prefix> directory
+        bootstrapEB(kwargs["eb_prefix"], kwargs["mns"], kwargs["eb_module_tool"])
 
     click.echo("Finished initialization of RESIF. Please add the following lines to your .bashrc (or similar):\n\nexport RESIF_CONFIGDIR=%s\nexport EASYBUILD_PREFIX=%s\nexport EASYBUILD_MODULES_TOOL=%s\n" % (kwargs['configdir'], kwargs['eb_prefix'], kwargs['eb_module_tool']))
 
