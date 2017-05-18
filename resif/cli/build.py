@@ -10,6 +10,7 @@ import subprocess
 import time
 import re
 import datetime
+import time
 import glob
 
 import click
@@ -19,7 +20,7 @@ from resif.utilities import role
 from resif.utilities.swset import getSoftwareSets, getSoftwares
 
 def chgrp(path, groupname):
-    click.echo("\nChanging permissions of installation directory. This might take a few minutes.")
+    echoWithTimeStamp("\nChanging permissions of installation directory. This might take a few minutes.")
     try:
         gid = grp.getgrnam(groupname).gr_gid
         os.chown(path, -1, gid)
@@ -88,6 +89,15 @@ def checkSoftwares(softwares, enable_try):
             return False
     return True
 
+def getTimeStamp():
+    standard = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    unix = int(time.time())
+    return "[%s %s]" % (standard, unix)
+
+def echoWithTimeStamp(text, err=False):
+    click.echo("%s %s" % (getTimeStamp(), text), err=err)
+
+
 # Build a list of software with EasyBuild
 def buildSwSets(params):
 
@@ -136,9 +146,9 @@ def buildSwSets(params):
         options += ' --module-naming-scheme=' + roledata['mns']
 
         if params['dry_run']:
-            click.echo("Dry run of software set '%s'..." % (swset))
+            echoWithTimeStamp("Dry run of software set '%s'..." % (swset))
         else:
-            click.echo("Building software set '%s'..." % (swset))
+            echoWithTimeStamp("Building software set '%s'..." % (swset))
 
         if 'release' in params and params['release']:
             params['installdir'] = getInstallDir(params['configdir'], roledata['datadir'], params['release'])
@@ -204,9 +214,9 @@ def buildSwSets(params):
         # For each software
         for software, swinfohash in softwares.items():
             if params['dry_run']:
-                click.echo("Now starting dry run of " + software)
+                echoWithTimeStamp("Now starting dry run of " + software)
             else:
-                click.echo("Now starting to install " + software)
+                echoWithTimeStamp("Now starting to install " + software)
 
             if swinfohash['ebfile'] and (('try' not in swinfohash) or params['enable_try']):
                 if 'try' in swinfohash and swinfohash['try']:
@@ -218,10 +228,10 @@ def buildSwSets(params):
                 output, returncode = execRToutput(command)
                 if not returncode:
                     if re.search("\(module found\)", output) != None:
-                        click.echo(software + " was already installed. Nothing to be done.")
+                        echoWithTimeStamp(software + " was already installed. Nothing to be done.")
                         statistics['already_installed'].append(software)
                     elif not params['dry_run']:
-                        click.echo('Successfully installed ' + software)
+                        echoWithTimeStamp('Successfully installed ' + software)
                         statistics['success'].append(software)
                 else:
                     match = re.findall("Results of the build can be found in the log file\(s\) (.*)", output)
@@ -230,11 +240,11 @@ def buildSwSets(params):
                         statistics['failed'].append("%s (log: %s)" % (software, logfile))
                     else:
                         statistics['failed'].append(software)
-                    click.echo('Failed to install %s.\nOperation failed with return code %s.' % (software, returncode), err=True)
+                    echoWithTimeStamp('Failed to install %s.\nOperation failed with return code %s.' % (software, returncode), err=True)
                     if not params['ignore_build_failure']:
                         exit(returncode)
             else:
-                click.echo("Failed to install %s.\nNo easyconfig file found." % (software), err=True)
+                echoWithTimeStamp("Failed to install %s.\nNo easyconfig file found." % (software), err=True)
                 if not params['ignore_build_failure']:
                     exit(-1)
                 statistics['no_ebfile'].append(software)
@@ -250,7 +260,7 @@ def buildSwSets(params):
             chgrp(installpath, roledata['group'])
 
         if not params['dry_run']:
-            click.echo("Finished build of software set '" + swset + "'. Duration: " + swsetDurationStr)
+            echoWithTimeStamp("Finished build of software set '" + swset + "'. Duration: " + swsetDurationStr)
 
     click.echo("\n=== SUMMARY STATISTICS ===")
     click.echo("Successfully installed: %s" % (len(statistics['success'])))
@@ -313,7 +323,7 @@ def build(**kwargs):
     # If a yaml file was given for the swset argument
     if kwargs['swset'].endswith(".yaml"):
         if os.path.isfile(kwargs['swset']):
-            click.echo("Loading software sets from file %s" % (kwargs['swset']))
+            echoWithTimeStamp("Loading software sets from file %s" % (kwargs['swset']))
             kwargs['swset'] = os.path.abspath(os.path.expandvars(kwargs['swset']))
         else:
             click.echo("File %s cannot be found." % (kwargs['swset']), err=True)
@@ -323,7 +333,7 @@ def build(**kwargs):
         # Look for the respective yaml file in the configuration directory
         swsetfile = kwargs['swset'] + ".yaml"
         if os.path.isfile(os.path.join(kwargs['configdir'], "swsets", swsetfile)):
-            click.echo("Loading software set '%s' from configdir %s" %(kwargs['swset'], kwargs['configdir']))
+            echoWithTimeStamp("Loading software set '%s' from configdir %s" %(kwargs['swset'], kwargs['configdir']))
             kwargs['swset'] = os.path.join(kwargs['configdir'], "swsets", swsetfile)
         else:
             click.echo("Software set %s cannot be found in configdir %s." % (kwargs['swset'], kwargs['configdir']), err=True)
@@ -335,9 +345,9 @@ def build(**kwargs):
         kwargs['dry_run'] = False
 
     if kwargs['dry_run']:
-        click.echo("Doing a dry run...")
+        echoWithTimeStamp("Doing a dry run...")
     else:
-        click.echo("Building the software sets...")
+        echoWithTimeStamp("Building the software sets...")
     start = time.time()
 
     buildSwSets(kwargs)
@@ -349,8 +359,8 @@ def build(**kwargs):
     h, m = divmod(m, 60)
     durationFormated = "%dh %dm %ds" % (h, m, s)
     if kwargs['dry_run']:
-        click.echo("\nFinished dry run in %s." % (durationFormated))
+        echoWithTimeStamp("\nFinished dry run in %s." % (durationFormated))
     else:
-        click.echo("\nFinished build of all software sets. Duration: " + durationFormated)
+        echoWithTimeStamp("\nFinished build of all software sets. Duration: " + durationFormated)
 
     return
