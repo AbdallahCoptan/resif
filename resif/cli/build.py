@@ -189,15 +189,11 @@ def buildSwSets(params):
         else:
             precommands += 'module load EasyBuild;'
 
-        # remove EB_PREFIX since it's not in our data directory and might contain further modules than just EasyBuild,
-        # that could interfer with our installation
+        # add path for the software set that will get built and the default software set
         if params["module_cmd"] == "modulecmd":
-            precommands += 'export MODULEPATH=%s;' % (':'.join([oldmodulepath, os.path.join(installpath, 'modules', 'all'), defaultSwsetPath]))
+            precommands += 'export MODULEPATH=%s;' % (':'.join([oldmodulepath, os.path.join(installpath, 'modules', 'all'), defaultSwsetPath, ebInstallPath]))
         elif params["module_cmd"] == "lmod":
-            # only remove it if it wasn't present before
-            if ebInstallPath not in oldmodulepath.split(":"):
-                precommands += "module unuse %s; " % (ebInstallPath)
-            precommands += "module use %s; module use %s;" % (defaultSwsetPath, os.path.join(installpath, 'modules', 'all'))
+            precommands += "module use %s; module use %s;" % (os.path.join(installpath, 'modules', 'all'), defaultSwsetPath)
 
         # Add path to easyblocks to PYTHONPATH, so EasyBuild can find them
         if eblockspath:
