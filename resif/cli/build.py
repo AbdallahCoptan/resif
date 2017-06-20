@@ -17,7 +17,7 @@ import click
 
 from resif.utilities import source
 from resif.utilities import role
-from resif.utilities.swset import getSoftwareSets, getSoftwares
+from resif.utilities.swset import getSoftwareSets, getSoftwares, getSources
 
 def chgrp(path, groupname):
     echoWithTimeStamp("\nChanging permissions of installation directory. This might take a few minutes.")
@@ -129,8 +129,14 @@ def buildSwSets(params):
         else:
             roledata = role.get("default", params['configdir'])
 
+        additional_sources = {}
+        additional_sources.update(getSources(params['swset']))
+        if 'sources' in roledata:
+            additional_sources.update(roledata['sources'])
+
+
         # Pull all easyconfig and easyblocks repositories and the paths to them
-        eblockspath, econfigspath = source.pullall(params['configdir'], roledata['datadir'], params['swset'])
+        eblockspath, econfigspath = source.pullall(params['configdir'], roledata['datadir'], additional_sources)
 
         # Set the command line options for the eb command
         options = ""
