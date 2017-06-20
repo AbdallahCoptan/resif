@@ -26,6 +26,19 @@ def getSoftwareSets (resifile):
 
     return swsets
 
+# Get the additional sources defined in a resifile (if existent)
+def getSources (resifile):
+
+    f = open(resifile, 'r')
+    data = yaml.load(f)
+    f.close()
+
+    # Check if sources are definied in the resifile
+    if 'sources' in data:
+        return data['sources']
+    else:
+        return None
+
 # Check if an easyconfig file exists
 def checkEasyConfig (ebfile, ebpaths):
 
