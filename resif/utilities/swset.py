@@ -37,7 +37,7 @@ def getSources (resifile):
     if 'sources' in data:
         return data['sources']
     else:
-        return None
+        return {}
 
 # Check if an easyconfig file exists
 def checkEasyConfig (ebfile, ebpaths):
