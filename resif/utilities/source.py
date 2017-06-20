@@ -43,63 +43,66 @@ def __pull(repoinfo, path):
         else:
             git.pull()
 
-
 # Pull/update all sources defined in the config directory and from the optional resifile
 # and return their local paths
-def pullall(configdir, datadir, resifile=None):
+def pullall(configdir, datadir, additional_sources={}):
 
     eblockspathslist = []
     econfigspathslist = []
 
+    all_sources = {}
+
     sources_config_path = os.path.join(configdir, "sources")
 
-    # Pull/update all sources in the configuration directory
+    # Collect all sources from configdir/sources/
     for sourcefile in os.listdir(sources_config_path):
         name = sourcefile.rstrip(".yaml")
-
-        # Paths to the repo are <datadir>/easy{blocks,configs}/<sourcename>
-        eblockspath = os.path.join(datadir, "easyblocks", name)
-        econfigspath = os.path.join(datadir, "easyconfigs", name)
 
         f = open(os.path.join(sources_config_path, sourcefile), 'r')
         source = yaml.load(f)
         f.close()
 
+        all_sources[name] = source
+
+    # Add additional_sources
+    # additional_sources overwrite default sources if the name is identical
+    all_sources.update(additional_sources)
+
+    # Generate paths and pull (if git) all sources
+    for name in all_sources.keys():
+
+        source = all_sources[name]
+
         if "easyblocks" in source:
+            eblockspath = os.path.join(datadir, "easyblocks", name)
             __pull(source["easyblocks"], eblockspath)
-            eblockspathslist.append((source['priority'],eblockspath))
+
+            if 'directory' in source['easyblocks']:
+                eblockspath = os.path.join(eblockspath, source['easyblocks']['directory'])
+
+            eblockspathslist.append((source['priority'], eblockspath))
+
         if "easyconfigs" in source:
+
+            econfigspath = os.path.join(datadir, "easyconfigs", name)
             __pull(source["easyconfigs"], econfigspath)
+
+            if 'directory' in source['easyconfigs']:
+                econfigspath = os.path.join(econfigspath, source['easyconfigs']['directory'])
+
             if os.path.isdir(os.path.join(econfigspath, "easybuild", "easyconfigs")):
-                econfigspathslist.append((source['priority'], os.path.join(econfigspath, "easybuild", "easyconfigs")))
+                econfigspathslist.append(
+                    (source['priority'], os.path.join(econfigspath, "easybuild", "easyconfigs")))
             else:
                 econfigspathslist.append((source['priority'], econfigspath))
-
-    if resifile:
-        f = open(resifile, 'r')
-        data = yaml.load(f)
-        f.close()
-
-        # Check if sources are definied in the resifile
-        if 'sources' in data:
-            for name in data['sources'].keys():
-                eblockspath = os.path.join(datadir, "easyblocks", name)
-                econfigspath = os.path.join(datadir, "easyconfigs", name)
-                source = data['sources'][name]
-
-                if "easyblocks" in source:
-                    __pull(source["easyblocks"], eblockspath)
-                    eblockspathslist.append((source['priority'], eblockspath))
-                if "easyconfigs" in source:
-                    __pull(source["easyconfigs"], econfigspath)
-                    econfigspathslist.append((source['priority'], os.path.join(econfigspath, "easybuild", "easyconfigs")))
 
     # Sort the paths by their priority
     eblockspathslist.sort(key=lambda x: x[0])
     econfigspathslist.sort(key=lambda x: x[0])
 
     # Return the lists of paths separated by :
-    return (":".join(map(lambda x: x[1], eblockspathslist)), ":".join(map(lambda x: x[1], econfigspathslist)))
+    return (":".join(map(lambda x: x[1], eblockspathslist)),
+            ":".join(map(lambda x: x[1], econfigspathslist)))
 
 
 def list(configdir):
