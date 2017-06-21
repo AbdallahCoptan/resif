@@ -1,0 +1,23 @@
+# roles/default.yaml
+# Default RESIF user role -- set by 'resif init'
+
+datadir: $HOME/.local/resif
+mns: CategorizedModuleNamingScheme
+buildmode: local
+
+# # The group of the installdir will be changed to this after installation
+group: clusterusers
+
+# # These environmental variables will be set before building software
+environment:
+  EASYBUILD_BUILDPATH: "/dev/shm"
+
+sources:
+  "ulhpc_github":
+    priority: 1
+    easyconfigs:
+      git: "https://github.com/ULHPC/easybuild-easyconfigs"
+      branch: 'uni.lu'
+      directory: 'default'
+    easyblocks:
+      git: "https://github.com/ULHPC/easybuild-easyblocks"
