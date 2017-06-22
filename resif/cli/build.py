@@ -129,10 +129,9 @@ def buildSwSets(params):
         else:
             roledata = role.get("default", params['configdir'])
 
-        additional_sources = {}
-        additional_sources.update(getSources(params['swset']))
+        additional_sources = [getSources(params['swset'])]
         if 'sources' in roledata:
-            additional_sources.update(roledata['sources'])
+            additional_sources.append(roledata['sources'])
 
 
         # Pull all easyconfig and easyblocks repositories and the paths to them
