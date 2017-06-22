@@ -62,6 +62,9 @@ def findSimilarEasyConfig (ebfile, ebpaths):
     else:
         return None
 
+    if not toolchainversion or not toolchain:
+        return None
+
     if match.group(5):
         versionsuffix = match.group(5)
     else:
