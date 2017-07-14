@@ -1,6 +1,26 @@
 # -*- mode: yaml -*-
 # Sample software set definition for RESIF
 
+###############################
+# Default Toolchains to Build #
+###############################
+# get the list of  supported compiler toolchains using:
+#      eb --list-toolchains
+# See also http://easybuild.readthedocs.io/en/latest/eb_list_toolchains.html
+toolchains:
+  - foss/2017a
+  - intel/2017a
+
+################
+# Software Set #
+################
+
+<software set name>:
+  - <softname>-<version>-<toolchain>.eb  # Ex: HPL-2.1-foss-2016.06.eb, means install exactly that EB file
+  - <softname>/<version>                 # Ex: HPL/2.1, means search for HPL-2.1*.eb and build the latest for the considered toolchains
+  - <softname>/<version>-<versionsuffix>
+
+
 ################################
 # (optional) EB Custom Sources #
 ################################
@@ -9,29 +29,20 @@
 # i.e. easy{configs,blocks} if they differ from the default ones
 sources:
   mysourcename:
-    priority: <n>   # knowing that default source get priority 50
+    priority: <n>   # knowing that default source get priority 50; lower number means higher priority
     easyconfigs:    # Specification for easybuild-easyconfigs
       path: "/path/to/easybuild-easyconfigs" # local path
-      git:  "<giturl>"     # OR (better) git url for the repository
-      ref:  "<ref>"        # (optional) git object that should be checked out.
-      tag:  "<tag>"        # (optional) git tag that should be checked out
-      commit: "<commit>"   # (optional) a specific git commit
-      branch: "<branch>"   # (optional) a specific branch to pull
+      git:  "<giturl>"            # OR (better) git url for the repository
+      ref:  "<ref>"               # (optional) git object that should be checked out.
+      tag:  "<tag>"               # (optional) git tag that should be checked out
+      commit: "<commit>"          # (optional) a specific git commit
+      branch: "<branch>"          # (optional) a specific branch to pull
+      directory: "<subdirectory>" # (optional) define a subdirectory to be used as the root directory
     easyblocks:    # Specification for easybuild-easyblocks
       path: "/path/to/easybuild-easyblocks" # local path
-      git:  "<giturl>"     # OR (better) git url for the repository
-      ref:  "<ref>"        # (optional) git object that should be checked out.
-      tag:  "<tag>"        # (optional) git tag that should be checked out
-      commit: "<commit>"   # (optional) a specific git commit
-      branch: "<branch>"   # (optional) a specific branch to pull
-
-###############################
-# Default Toolchains to Build #
-###############################
-# get the list of  supported compiler toolchains using:
-#      eb --list-toolchains
-# See also http://easybuild.readthedocs.io/en/latest/eb_list_toolchains.html
-toolchains:
-- foss
-- intel
-- gmvolf
+      git:  "<giturl>"            # OR (better) git url for the repository
+      ref:  "<ref>"               # (optional) git object that should be checked out.
+      tag:  "<tag>"               # (optional) git tag that should be checked out
+      commit: "<commit>"          # (optional) a specific git commit
+      branch: "<branch>"          # (optional) a specific branch to pull
+      directory: "<subdirectory>" # (optional) define a subdirectory to be used as the root directory
