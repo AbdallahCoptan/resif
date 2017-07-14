@@ -12,6 +12,4 @@ priority: 10
 easyconfigs:
   git: "https://github.com/ULHPC/easybuild-easyconfigs"
   branch: 'uni.lu-develop'
-easyblocks:
-  git: "https://github.com/hpcugent/easybuild-easyblocks"
-  branch: 'develop'
+  directory: 'default' # specifies a subdirectory in the git repository to be used as the root for easyconfigs
