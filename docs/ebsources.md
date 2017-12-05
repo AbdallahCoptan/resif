@@ -25,18 +25,20 @@ To do that, set a file `<configdir>/sources/<shortname>.yaml` according to the f
 priority: <n>   # Default source get priority 100
 easyconfigs:    # Specification for easybuild-easyconfigs
   path: "/path/to/easybuild-easyconfigs" # local path
-  git:  "<giturl>"     # OR (better) git url for the repository
-  ref:  "<ref>"        # (optional) git object that should be checked out.
-  tag:  "<tag>"        # (optional) git tag that should be checked out
-  commit: "<commit>"   # (optional) a specific git commit
-  branch: "<branch>"   # (optional) a specific branch to pull
+  git:  "<giturl>"            # OR (better) git url for the repository
+  ref:  "<ref>"               # (optional) git object that should be checked out.
+  tag:  "<tag>"               # (optional) git tag that should be checked out
+  commit: "<commit>"          # (optional) a specific git commit
+  branch: "<branch>"          # (optional) a specific branch to pull
+  directory: "<subdirectory>" # (optional) define a subdirectory to be used as the root directory
 easyblocks:    # Specification for easybuild-easyblocks
   path: "/path/to/easybuild-easyblocks" # local path
-  git:  "<giturl>"     # OR (better) git url for the repository
-  ref:  "<ref>"        # (optional) git object that should be checked out.
-  tag:  "<tag>"        # (optional) git tag that should be checked out
-  commit: "<commit>"   # (optional) a specific git commit
-  branch: "<branch>"   # (optional) a specific branch to pull
+  git:  "<giturl>"            # OR (better) git url for the repository
+  ref:  "<ref>"               # (optional) git object that should be checked out.
+  tag:  "<tag>"               # (optional) git tag that should be checked out
+  commit: "<commit>"          # (optional) a specific git commit
+  branch: "<branch>"          # (optional) a specific branch to pull
+  directory: "<subdirectory>" # (optional) define a subdirectory to be used as the root directory
 ~~~
 
 Typically, you will end with the following layout:
@@ -44,7 +46,7 @@ Typically, you will end with the following layout:
 ```bash
 <configdir>
 └── sources     # Easybuild sources
-    ├── default.yaml   # default settings, based on
+    ├── default.yaml   # default easybuild repositories
     ├── ulhpc.yaml
     └── local.yaml
 ```

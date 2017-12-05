@@ -16,10 +16,7 @@ The following settings can be used to control how the RESIFile installs and hand
 
 ### sources (optional)
 
-See [`ebsources.md`](ebsources.md) -- you might want to precise here a custom source for [Easybuild](https://hpcugent.github.io/easybuild) recipes (_i.e._ easyconfigs and easyblocks) that you **haven't** configured in `<configdir>/sources/<shortname>.yaml` (for instance if you want to use this source only once for the considered software set).
-So you can do that under the **FIXME**
-
-You might wish to configure for some of the software you wish to install your custom source under `sources["mysourceshortname"]`, _i.e._ as follows (see also `sample/swsets.yaml`):
+You might want to precise here one or multiple custom sources for [Easybuild](https://hpcugent.github.io/easybuild) recipes (_i.e._ easyconfigs and easyblocks) that you **haven't** configured in `<configdir>/sources/<shortname>.yaml` (for instance if you want to use this source only once for the considered software set), as follows (see also `sample/swsets.yaml` and [`ebsources.md`](ebsources.md)):
 
 ~~~yaml
 sources:
@@ -65,10 +62,10 @@ toolchains:
 - foss/2016b
 - intel/2016a
 - intel/2016b
-- gmvolf
+- gmvolf/2016a
 ```
 
-__Note__: you precise the name of the compiler toolchains as the software listed under a given software set, _i.e._ under the form `<toolchain>/<version>` OR `<toochain>-<version>.eb`
+__Note__: You precise the name of the compiler toolchains in the form `<toolchain>/<version>`.
 
 Most interesting toolchains:
 
@@ -97,8 +94,9 @@ It holds the set of software to be present by default (in addition ), which dese
 You can refer to a given software to install (according to a Easybuild recipe) according to one for the following forms:
 
 ~~~bash
-- <softname>-<version>-<toolchain>.eb  # Ex: HPL-2.1-foss-2016.06.eb, means install exactly that EB file
-- <softname>/<version>                 # Ex: HPL/2.1, means search for HPL-2.1*.eb and build the latest for the considered toolchains
+- <softname>-<version>-<toolchain>.eb   # Ex: HPL-2.1-foss-2016.06.eb, means install exactly that EB file
+- <softname>/<version>                  # Ex: HPL/2.1, means search for HPL-2.1*.eb and build the latest for the considered toolchains
+- <softname>/<version>-<versionsuffix>
 ~~~
 
 ## Software Set
@@ -107,8 +105,8 @@ A software set is simply a **list** of software specifications under a named nam
 
 ```yaml
 <name>:
-- <software1>.eb [: <sourcename>]
-- <software2>.eb [: <sourcename>]
+- <software1>.eb
+- <software2>.eb
 - ...
 ```
 

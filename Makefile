@@ -51,9 +51,9 @@ BUILD      = $(shell git log --oneline | wc -l | sed -e "s/[ \t]*//g")
 
 #REVISION   = $(shell git rev-list $(LAST_TAG).. --count)
 #ROOTDIR    = $(shell git rev-parse --show-toplevel)
-NEXT_MAJOR_VERSION = $(shell expr $(MAJOR) + 1).0.0-b$(BUILD)
-NEXT_MINOR_VERSION = $(MAJOR).$(shell expr $(MINOR) + 1).0-b$(BUILD)
-NEXT_PATCH_VERSION = $(MAJOR).$(MINOR).$(shell expr $(PATCH) + 1)-b$(BUILD)
+NEXT_MAJOR_VERSION = $(shell expr $(MAJOR) + 1).0.0
+NEXT_MINOR_VERSION = $(MAJOR).$(shell expr $(MINOR) + 1).0
+NEXT_PATCH_VERSION = $(MAJOR).$(MINOR).$(shell expr $(PATCH) + 1)
 
 # Default targets
 TARGETS =

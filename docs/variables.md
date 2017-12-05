@@ -26,7 +26,8 @@ Here are all the __RESIF__ variables that can be set, followed by their descript
 
 
 
-Note that for each of the above variables, the corresponding environmental variable `$RESIF_<uppercase(variable)>` can be set.
+Note that for some of the above variables, the corresponding environmental variable `$RESIF_<uppercase(variable)>` can be set (see `resif --help` and `resif <command> --help` for details).
+
 Thus configuring RESIF can be done:
 
 * using `resif` with command line arguments
@@ -73,7 +74,7 @@ The typical layout of this directory is depicted below:
 
 ### `<resifile>`: RESIF file
 
-This YAML file is used to define the [software set__s__](software_sets.md) to deploy.
+This YAML file is used to define the [software sets](software_sets.md) to deploy.
 It thus serve as the main configuration file for RESIF as defined by default in `<configdir>/swsets/default.yaml`.
 
 For more details on its format, see [`RESIFile.md`](RESIFile.md).
@@ -157,7 +158,9 @@ This layout is reflected in the above example concerning `<datadir>`.
 
 ### `<buildmode>`: Build mode
 
-The way the software package are built, _i.e._ either locally (`local`, __Default__) or via job submission on the platform (`job`). Default value:
+The way the software package are built, _i.e._ either locally (`local`, __default__) or via job submission on the platform (`job`).
+
+__NOTE:__ `job` build mode is not implemented yet!
 
 
 

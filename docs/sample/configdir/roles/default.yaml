@@ -12,12 +12,13 @@ group: clusterusers
 environment:
   EASYBUILD_BUILDPATH: "/dev/shm"
 
+# Specify additional sources that are only used with this role
 sources:
   "ulhpc_github":
     priority: 1
     easyconfigs:
       git: "https://github.com/ULHPC/easybuild-easyconfigs"
       branch: 'uni.lu'
-      directory: 'default'
+      directory: 'gaia'
     easyblocks:
       git: "https://github.com/ULHPC/easybuild-easyblocks"
