@@ -26,11 +26,19 @@ def chgrp(path, groupname):
         os.chown(path, -1, gid)
         for root, dirs, files in os.walk(path):
             for d in dirs:
-                if not os.path.islink(os.path.join(root, d)):
-                    os.chown(os.path.join(root, d), -1, gid)
+                dirpath = os.path.join(root, d)
+                if not os.path.islink(dirpath):
+                    try:
+                        os.chown(dirpath, -1, gid)
+                    except OSError:
+                        click.secho("Failed to change permissions of directory %d\n" % dirpath, err=True, fg='yellow')
             for f in files:
-                if not os.path.islink(os.path.join(root, f)):
-                    os.chown(os.path.join(root, f), -1, gid)
+                filepath = os.path.join(root, f)
+                if not os.path.islink(filepath):
+                    try:
+                        os.chown(os.path.join(root, f), -1, gid)
+                    except OSError:
+                        click.secho("Failed to change permissions of file %d\n" % filepath, err=True, fg='yellow')
     except KeyError:
         click.secho("Failed to change permissions of installation directory. Unknown group '%s', please check that this group exists on the system!\n" % groupname, err=True, fg='yellow')
 
