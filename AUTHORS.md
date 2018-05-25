@@ -1,7 +1,7 @@
 -*- mode: markdown; mode: visual-line; fill-column: 80 -*-
 
        Revolutionary EasyBuild-based Software Installation Framework (RESIF)
-                    Copyright (c) 2015-2017 University of Luxembourg
+                    Copyright (c) 2015-2018 University of Luxembourg
 
                                 LIST OF CONTRIBUTORS
 

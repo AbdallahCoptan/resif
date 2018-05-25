@@ -19,6 +19,7 @@ from .cli.version import version
 from .cli.list import list
 from .cli.info import info
 from .cli.new import new
+from .cli.modules import modules
 
 lock_file = os.path.join(os.path.expanduser("~"), 'resif.lock')
 fp = open(lock_file, 'w')
@@ -62,3 +63,4 @@ resif.add_command(version)
 resif.add_command(list)
 resif.add_command(info)
 resif.add_command(new)
+resif.add_command(modules)
