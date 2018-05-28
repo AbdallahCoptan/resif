@@ -125,7 +125,8 @@ class SWEnv(object):
             self.datestamp = self.versionstamp.split('-')[1]             # 20170602
             self.year = time.strptime(self.datestamp, "%Y%m%d").tm_year  # 2017
             self.modulepaths = [
-                os.path.join(self.modulerootpath, str(self.year), self.buildtype, self.versionstamp, "%s.lua" % self.swset),
+                #os.path.join(self.modulerootpath, str(self.year), self.buildtype, self.versionstamp, "%s.lua" % self.swset),
+                os.path.join(self.modulerootpath, self.buildtype, "%s-env" % self.swset, "%s.lua" % self.versionstamp),
             ]
         elif self.pathtype == 'devel':
             self.buildtype = self.path.split('/')[-2]                    # devel or (future) devel type
@@ -136,8 +137,8 @@ class SWEnv(object):
             self.datestamp = mtime.strftime('%Y%m%d')                    # 20170602
             self.year = mtime.year                                       # 2017
             self.modulepaths = [
-                 os.path.join(self.modulerootpath, self.buildtype, self.versionstamp, "%s.lua" % self.swset),
-                 os.path.join(self.modulerootpath, self.buildtype, "%s.lua" % self.swset)
+                 #os.path.join(self.modulerootpath, self.buildtype, self.swset, "%s.lua" % self.versionstamp),
+                 os.path.join(self.modulerootpath, self.buildtype, "%s-env.lua" % self.swset)
             ]
         else: raise Exception("Internal error - don't know how to handle path type %s." % self.pathtype)
 
@@ -166,7 +167,7 @@ class SWEnv(object):
         for swenv in swenvlist:
             if swenv.pathtype == 'production' and swenv.buildroot == latest.buildroot:
                 click.echo("==== Chosen as priority: %s" % swenv)
-                swenv.modulepaths.append(os.path.join(swenv.modulerootpath, 'latest', "%s.lua" % swenv.swset))
+                swenv.modulepaths.append(os.path.join(swenv.modulerootpath, "%s-env" % swenv.swset, "latest.lua"))
 
     def __lt__(self, other):
         ''' Implement __lt__ so we can use sort/sorted on lists of SWEnv '''

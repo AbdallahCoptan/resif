@@ -17,14 +17,14 @@ local controlled = os.getenv("SWENV_CONTROLLED") or "false"
 
 -- conflict("swset")
 
-family("{{ versionstamp }}")
+family("{{ buildtype }}_{{ swset }}")
 
 setenv("SWENV_CONTROLLED", "true")
 
 if controlled == "true" then
   prepend_path("MODULEPATH", pathJoin(root, "modules", "all"))
 else
-  setenv("MODULEPATH", "{{ modulerootpath }}/../")
+  pushenv("MODULEPATH", "{{ modulerootpath }}/../")
   prepend_path("MODULEPATH", pathJoin(root, "modules", "all"))
 end
 
