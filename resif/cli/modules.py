@@ -106,7 +106,7 @@ def findBuilds(rootdir):
     buildsdata = {'production': prodBuildDirs, 'devel': develBuildDirs}
     return buildsdata
 
-class SWEnv:
+class SWEnv(object):
     ''' Software environment object - categorize based on path and create module files '''
 
     def __init__(self, path, pathtype, modulerootpath):
@@ -137,6 +137,7 @@ class SWEnv:
             self.year = mtime.year                                       # 2017
             self.modulepaths = [
                  os.path.join(self.modulerootpath, self.buildtype, self.versionstamp, "%s.lua" % self.swset),
+                 os.path.join(self.modulerootpath, self.buildtype, "%s.lua" % self.swset)
             ]
         else: raise Exception("Internal error - don't know how to handle path type %s." % self.pathtype)
 
@@ -152,16 +153,29 @@ class SWEnv:
                     if error.errno != errno.EEXIST: raise
             module = template.stream(vars(self))
             click.echo("==== Creating module for %s/%s: %s" % (self.versionstamp, self.swset, modulepath))
-            if not noop: module.dump(modulepath)
+            if not noop:
+                if os.path.exists(modulepath):
+                    click.echo("Found existing module file, this shouldn't happen, stopping.", err=True)
+                    exit(50)
+                else: module.dump(modulepath)
 
     @staticmethod
     def prioritizeModules(swenvlist):
         ''' Decide which software environment is the latest and set special module paths for it  '''
-        latest = sorted(filter(lambda el: el.pathtype == 'production', swenvlist), reverse=True).pop()
+        latest = sorted(filter(lambda el: el.pathtype == 'production', swenvlist), reverse=False).pop()
         for swenv in swenvlist:
             if swenv.pathtype == 'production' and swenv.buildroot == latest.buildroot:
+                click.echo("==== Chosen as priority: %s" % swenv)
                 swenv.modulepaths.append(os.path.join(swenv.modulerootpath, 'latest', "%s.lua" % swenv.swset))
 
     def __lt__(self, other):
         ''' Implement __lt__ so we can use sort/sorted on lists of SWEnv '''
         return LooseVersion(self.versionstamp) < LooseVersion(other.versionstamp) 
+
+    def __str__(self):
+        ''' Implement __str__ so we can print() a SWEnv '''
+        return "%s : %s" % (self.__class__, self.path) # vars(self)
+
+    def __repr__(self):
+        ''' Implement __repr__ for SWEnv in case we want to reproduce it '''
+        return ("%s('%s','%s','%s')" % (self.__class__.__name__, self.path, self.pathtype, self.modulerootpath))
