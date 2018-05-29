@@ -25,6 +25,7 @@ from resif.utilities import role
 @click.option('--moduledir', 'moduledir', envvar='RESIF_MODULEDIR', help='Explicitly set root for modules hierarchy, otherwise taken from configdir/modules configuration or $RESIF_MODULEDIR.')
 @click.option('--overwrite', 'overwrite', flag_value=True, help='Enable Resif to overwrite existing dirs/files in MODULEDIR.')
 @click.option('--no-op', 'noop', flag_value=True, help='Just print operations to be performed.')
+@click.option('--prod-in-root', 'prodinroot', flag_value=True, help="Add production swsets' modules directly to root.")
 
 def modules(**kwargs):
 
@@ -72,15 +73,18 @@ def modules(**kwargs):
             click.echo("==== Found existing modules dir: %s but --overwrite is not set, so stopping." % moduledir, err=True)
             exit(50)
     else:
-        click.echo("==== Creating modules dir: %s" % moduledir)
+        click.echo("==== Will create modules dir: %s" % moduledir)
+
+    # Warn if asked not to create
+    if kwargs['prodinroot']: click.echo("==== Will not create `production` directory level, swsets go in root.")
 
     ## MAIN execution code
     # Find directories that correspond to software environment builds
     buildsdata = findBuilds(datadir)
     # Create SWEnv objects (with self-categorizing code) from builds paths
     swenvs = []
-    for path in buildsdata['production']: swenvs.append(SWEnv(path, 'production', moduledir))
-    for path in buildsdata['devel']: swenvs.append(SWEnv(path, 'devel', moduledir))
+    for path in buildsdata['production']: swenvs.append(SWEnv(path, 'production', moduledir, addtypelevel = not kwargs['prodinroot']))
+    for path in buildsdata['devel']: swenvs.append(SWEnv(path, 'devel', moduledir, addtypelevel=False))
     # Allow some environments to multiple modules, some with priority in the hierarchy
     SWEnv.prioritizeModules(swenvs)
     # Generate modules for each environment
@@ -109,10 +113,11 @@ def findBuilds(rootdir):
 class SWEnv(object):
     ''' Software environment object - categorize based on path and create module files '''
 
-    def __init__(self, path, pathtype, modulerootpath):
+    def __init__(self, path, pathtype, modulerootpath, addtypelevel):
         self.path = path
         self.pathtype = pathtype
         self.modulerootpath = os.path.join(modulerootpath, "swenv")
+        self.addtypelevel = addtypelevel
         self.categorize()
 
     def categorize(self):
@@ -124,9 +129,11 @@ class SWEnv(object):
             self.versionstamp = self.path.split('/')[-2]                 # v0.1-20170602
             self.datestamp = self.versionstamp.split('-')[1]             # 20170602
             self.year = time.strptime(self.datestamp, "%Y%m%d").tm_year  # 2017
+            if self.addtypelevel: buildtype = self.buildtype
+            else: buildtype = ''
             self.modulepaths = [
-                #os.path.join(self.modulerootpath, str(self.year), self.buildtype, self.versionstamp, "%s.lua" % self.swset),
-                os.path.join(self.modulerootpath, self.buildtype, "%s-env" % self.swset, "%s.lua" % self.versionstamp),
+                #os.path.join(self.modulerootpath, str(self.year), buildtype, self.versionstamp, "%s.lua" % self.swset),
+                os.path.join(self.modulerootpath, buildtype, "%s-env" % self.swset, "%s.lua" % self.versionstamp),
             ]
         elif self.pathtype == 'devel':
             self.buildtype = self.path.split('/')[-2]                    # devel or (future) devel type

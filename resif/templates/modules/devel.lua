@@ -17,6 +17,8 @@ local controlled = os.getenv("SWENV_CONTROLLED") or "false"
 
 -- conflict("swset")
 
+family("{{ swset }}")
+
 if mode() == "load" then
     io.stderr:write([==[Module warning: The development software environment is not guaranteed to be stable!
 ]==])

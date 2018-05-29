@@ -17,7 +17,7 @@ local controlled = os.getenv("SWENV_CONTROLLED") or "false"
 
 -- conflict("swset")
 
-family("{{ buildtype }}_{{ swset }}")
+family("{{ swset }}")
 
 setenv("SWENV_CONTROLLED", "true")
 
