@@ -16,4 +16,4 @@ the attempt to facilitate Reproducible Research.
 
 # from . import resif
 
-__version__ = '2.0.4'
+__version__ = '2.0.5'

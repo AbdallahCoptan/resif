@@ -25,7 +25,7 @@ from resif.utilities import role
 @click.option('--moduledir', 'moduledir', envvar='RESIF_MODULEDIR', help='Explicitly set root for modules hierarchy, otherwise taken from configdir/modules configuration or $RESIF_MODULEDIR.')
 @click.option('--overwrite', 'overwrite', flag_value=True, help='Enable Resif to overwrite existing dirs/files in MODULEDIR.')
 @click.option('--no-op', 'noop', flag_value=True, help='Just print operations to be performed.')
-@click.option('--prod-in-root', 'prodinroot', flag_value=True, help="Add production swsets' modules directly to root.")
+@click.option('--layout', type=click.Choice(['full', 'flat', 'versioned']), default='full', help='Set how the modules are arranged. Full (default): cat./name/ver., Flat: name/ver., Versioned: name/ver.-buildtype ')
 
 def modules(**kwargs):
 
@@ -75,16 +75,16 @@ def modules(**kwargs):
     else:
         click.echo("==== Will create modules dir: %s" % moduledir)
 
-    # Warn if asked not to create
-    if kwargs['prodinroot']: click.echo("==== Will not create `production` directory level, swsets go in root.")
+    # Module layout
+    click.echo("==== Will use '%s' layout for modules." % kwargs['layout'])
 
     ## MAIN execution code
     # Find directories that correspond to software environment builds
     buildsdata = findBuilds(datadir)
     # Create SWEnv objects (with self-categorizing code) from builds paths
     swenvs = []
-    for path in buildsdata['production']: swenvs.append(SWEnv(path, 'production', moduledir, addtypelevel = not kwargs['prodinroot']))
-    for path in buildsdata['devel']: swenvs.append(SWEnv(path, 'devel', moduledir, addtypelevel=False))
+    for path in buildsdata['production']: swenvs.append(SWEnv(path, 'production', moduledir, kwargs['layout']))
+    for path in buildsdata['devel']: swenvs.append(SWEnv(path, 'devel', moduledir, kwargs['layout']))
     # Allow some environments to multiple modules, some with priority in the hierarchy
     SWEnv.prioritizeModules(swenvs)
     # Generate modules for each environment
@@ -113,11 +113,11 @@ def findBuilds(rootdir):
 class SWEnv(object):
     ''' Software environment object - categorize based on path and create module files '''
 
-    def __init__(self, path, pathtype, modulerootpath, addtypelevel):
+    def __init__(self, path, pathtype, modulerootpath, layout):
         self.path = path
         self.pathtype = pathtype
         self.modulerootpath = os.path.join(modulerootpath, "swenv")
-        self.addtypelevel = addtypelevel
+        self.layout = layout
         self.categorize()
 
     def categorize(self):
@@ -129,12 +129,13 @@ class SWEnv(object):
             self.versionstamp = self.path.split('/')[-2]                 # v0.1-20170602
             self.datestamp = self.versionstamp.split('-')[1]             # 20170602
             self.year = time.strptime(self.datestamp, "%Y%m%d").tm_year  # 2017
-            if self.addtypelevel: buildtype = self.buildtype
-            else: buildtype = ''
-            self.modulepaths = [
-                #os.path.join(self.modulerootpath, str(self.year), buildtype, self.versionstamp, "%s.lua" % self.swset),
-                os.path.join(self.modulerootpath, buildtype, "%s-env" % self.swset, "%s.lua" % self.versionstamp),
-            ]
+            if self.layout == 'full':
+                self.modulepaths = [os.path.join(self.modulerootpath, self.buildtype, "%s-env" % self.swset, "%s.lua" % self.versionstamp),]
+            elif self.layout == 'flat':
+                self.modulepaths = [os.path.join(self.modulerootpath, "%s-env" % self.swset, "%s.lua" % self.versionstamp),]
+            elif self.layout == 'versioned':
+                self.modulepaths = [os.path.join(self.modulerootpath, "%s-env" % self.swset, "%s-%s.lua" % (self.versionstamp, self.buildtype)),]
+            else: raise Exception("Internal error - don't know how to handle layout type: %s." % self.layout)
         elif self.pathtype == 'devel':
             self.buildtype = self.path.split('/')[-2]                    # devel or (future) devel type
             self.swset = self.path.split('/')[-1]                        # default, bioinfo, ...
@@ -143,10 +144,11 @@ class SWEnv(object):
             self.versionstamp = mtime.strftime('rolling-%Y%m%d')         # rolling-20170602
             self.datestamp = mtime.strftime('%Y%m%d')                    # 20170602
             self.year = mtime.year                                       # 2017
-            self.modulepaths = [
-                 #os.path.join(self.modulerootpath, self.buildtype, self.swset, "%s.lua" % self.versionstamp),
-                 os.path.join(self.modulerootpath, self.buildtype, "%s-env.lua" % self.swset)
-            ]
+            if self.layout == 'full' or self.layout == 'flat':
+                self.modulepaths = [os.path.join(self.modulerootpath, self.buildtype, "%s-env.lua" % self.swset)]
+            elif self.layout == 'versioned':
+                self.modulepaths = [os.path.join(self.modulerootpath, "%s-env" % self.swset, "%s.lua" % self.buildtype),]
+            else: raise Exception("Internal error - don't know how to handle layout type: %s." % self.layout)
         else: raise Exception("Internal error - don't know how to handle path type %s." % self.pathtype)
 
     def generateModules(self, noop):
